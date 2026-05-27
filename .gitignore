@@ -49,13 +49,6 @@ document_cache/
 .DS_Store
 Thumbs.db
 
-# Windows batch files
-start.bat
-
-# Images and Resources (project-specific assets)
-images/
-resources/
-
 # Logs
 *.log
 npm-debug.log*
