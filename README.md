@@ -700,7 +700,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 📞 Contact & Support
 
 ### Project Team
-- **GitHub:** [github.com/yourusername/chronos-f1](https://github.com/dev-Ninjaa/chronos-f1)
+- **GitHub:** [github.com](https://github.com/dev-Ninjaa/chronos-f1)
 - **Issues:** [Report bugs or request features](https://github.com/dev-Ninjaa/chronos-f1/issues)
 
 ### Hackathon
