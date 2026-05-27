@@ -34,7 +34,6 @@ wheels/
 # Computed Data (processed race data - too large for GitHub)
 # These files are generated automatically and can be regenerated
 computed_data/
-*.pkl
 
 # Document Cache
 document_cache/
@@ -49,6 +48,13 @@ document_cache/
 # OS
 .DS_Store
 Thumbs.db
+
+# Windows batch files
+start.bat
+
+# Images and Resources (project-specific assets)
+images/
+resources/
 
 # Logs
 *.log
