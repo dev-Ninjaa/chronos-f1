@@ -31,9 +31,10 @@ wheels/
 # FastF1 Cache (raw API data - can be regenerated)
 .fastf1-cache/
 
-# Computed Data (processed race data - KEEP THIS for faster loading!)
-# Comment out the line below if you want to share processed data
-# computed_data/
+# Computed Data (processed race data - too large for GitHub)
+# These files are generated automatically and can be regenerated
+computed_data/
+*.pkl
 
 # Document Cache
 document_cache/
