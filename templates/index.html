@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos F1 - Enhanced Race Replay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>🏎️ Chronos F1 Enhanced</h1>
+            <div class="header-controls">
+                <div id="aiIndicator" class="ai-indicator">🤖 AI: OFF</div>
+                <div class="connection-status" id="connectionStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Disconnected</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Race Selection -->
+                <div class="section">
+                    <h2>Race Selection</h2>
+                    <div class="form-group">
+                        <label for="seasonSelect">Season</label>
+                        <select id="seasonSelect" class="select-input">
+                            <option value="">Select Season...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raceSelect">Race</label>
+                        <select id="raceSelect" class="select-input" disabled>
+                            <option value="">Select Race...</option>
+                        </select>
+                    </div>
+                    <button id="loadRaceBtn" class="btn btn-primary" disabled>Load Race</button>
+                </div>
+
+                <!-- Race Info -->
+                <div class="section" id="raceInfoSection" style="display: none;">
+                    <h2>Race Info</h2>
+                    <div class="info-item">
+                        <span class="label">Event:</span>
+                        <span id="eventName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Circuit:</span>
+                        <span id="circuitName">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Date:</span>
+                        <span id="raceDate">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Total Laps:</span>
+                        <span id="totalLaps">-</span>
+                    </div>
+                </div>
+
+                <!-- Weather -->
+                <div class="section" id="weatherSection" style="display: none;">
+                    <h2>Weather</h2>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="weather-icon">🌡️</span>
+                            <div>
+                                <div class="weather-label">Track</div>
+                                <div class="weather-value" id="trackTemp">-</div>
+                            </div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-icon">🌡️</span>
+                            <div>
+                                <div class="weather-label">Air</div>
+                                <div class="weather-value" id="airTemp">-</div>
+                            </div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-icon">💧</span>
+                            <div>
+                                <div class="weather-label">Humidity</div>
+                                <div class="weather-value" id="humidity">-</div>
+                            </div>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-icon">💨</span>
+                            <div>
+                                <div class="weather-label">Wind</div>
+                                <div class="weather-value" id="wind">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="section" id="leaderboardSection" style="display: none;">
+                    <div class="leaderboard-header">
+                        <h2>Leaderboard</h2>
+                        <div class="gap-toggles">
+                            <button id="gapLeaderBtn" class="gap-toggle" title="Gap to Leader">L</button>
+                            <button id="gapIntervalBtn" class="gap-toggle active" title="Interval Gap">I</button>
+                        </div>
+                    </div>
+                    <div id="leaderboard" class="leaderboard"></div>
+                </div>
+
+                <!-- Race Control -->
+                <div class="section" id="raceControlSection" style="display: none;">
+                    <h2>Race Control</h2>
+                    <div id="raceControlFeed" class="race-control-feed"></div>
+                </div>
+                
+                <!-- AI Commentary -->
+                <div class="section" id="aiCommentarySection" style="display: none;">
+                    <h2>🎙️ AI Commentary</h2>
+                    <div id="aiCommentary" class="ai-commentary-box"></div>
+                </div>
+                
+                <!-- Strategy Insights (Langflow) -->
+                <div class="section" id="strategyInsightsSection" style="display: none;">
+                    <h2>📊 Strategy Insights</h2>
+                    <div id="strategyInsights" class="strategy-insights-box"></div>
+                </div>
+            </aside>
+
+            <!-- Main Viewer -->
+            <main class="viewer">
+                <div id="loadingScreen" class="loading-screen">
+                    <div class="loading-content">
+                        <h2>Select a race to begin</h2>
+                        <p>Choose a season and race from the sidebar</p>
+                    </div>
+                </div>
+
+                <canvas id="trackCanvas" style="display: none;"></canvas>
+
+                <!-- Session Info Overlay -->
+                <div id="sessionInfo" class="session-info" style="display: none;">
+                    <div class="session-time">
+                        <span class="label">Time:</span>
+                        <span id="sessionTime">00:00:00</span>
+                    </div>
+                    <div class="session-lap">
+                        <span class="label">Lap:</span>
+                        <span id="sessionLap">1</span>
+                        <span>/</span>
+                        <span id="sessionTotalLaps">0</span>
+                    </div>
+                    <div class="session-leader">
+                        <span class="label">Leader:</span>
+                        <span id="sessionLeader">-</span>
+                    </div>
+                    <div class="session-status">
+                        <span class="label">Status:</span>
+                        <span id="trackStatus" class="track-status">GREEN</span>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div id="controls" class="controls" style="display: none;">
+                    <button id="restartBtn" class="control-btn" title="Restart">⏮</button>
+                    <button id="playPauseBtn" class="control-btn" title="Play/Pause">▶</button>
+                    <div class="speed-control">
+                        <label>Speed:</label>
+                        <select id="speedSelect" class="speed-select">
+                            <option value="0.25">0.25x</option>
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="2">2x</option>
+                            <option value="4">4x</option>
+                            <option value="8">8x</option>
+                        </select>
+                    </div>
+                    <div class="feature-toggles">
+                        <button id="toggleDrs" class="feature-toggle active" title="Toggle DRS Zones">DRS</button>
+                        <button id="toggleWeather" class="feature-toggle active" title="Toggle Weather">☁️</button>
+                    </div>
+                    <div class="progress-bar">
+                        <input type="range" id="progressSlider" min="0" max="100" value="0" class="slider">
+                        <div class="progress-info">
+                            <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
