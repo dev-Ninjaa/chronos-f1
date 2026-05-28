@@ -36,7 +36,7 @@ wheels/
 computed_data/
 
 # Document Cache
-document_cache/
+# document_cache/
 
 # IDE
 .vscode/
