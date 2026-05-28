@@ -10,6 +10,11 @@ class ChronosF1Enhanced {
         this.isPlaying = false;
         this.selectedDrivers = [];
         this.analysisInterval = null;  // For Langflow analysis updates
+
+        // Ghost comparison overlay
+        this.ghostEnabled = false;
+        this.ghostPosition = null;
+        this.ghostDelta = null;
         
         // Display toggles
         this.showDrs = true;
@@ -39,6 +44,8 @@ class ChronosF1Enhanced {
         this.socket.on('connect', () => {
             console.log('✅ Connected to server');
             this.updateConnectionStatus(true);
+            // Request AI capabilities/status so UI can enable/disable sections.
+            this.socket.emit('get_ai_status');
         });
         
         this.socket.on('disconnect', () => {
@@ -111,7 +118,7 @@ class ChronosF1Enhanced {
         });
         
         document.getElementById('progressSlider').addEventListener('input', (e) => {
-            this.seek(parseInt(e.target.value));
+            this.seek(parseInt(e.target.value, 10));
         });
         
         // Feature toggles
@@ -155,7 +162,35 @@ class ChronosF1Enhanced {
         // Canvas setup
         this.canvas = document.getElementById('trackCanvas');
         this.ctx = this.canvas.getContext('2d');
+        this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
         window.addEventListener('resize', () => this.resizeCanvas());
+    }
+
+    handleCanvasClick(e) {
+        if (!this.currentTelemetry || !this.currentTelemetry.frame || !this.currentTelemetry.frame.drivers) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        let best = null;
+        let bestDist = Infinity;
+        for (const [code, data] of Object.entries(this.currentTelemetry.frame.drivers)) {
+            if (data.x === undefined || data.y === undefined) continue;
+            const x = data.x * this.trackScale + this.trackOffsetX;
+            const y = data.y * this.trackScale + this.trackOffsetY;
+            const d = Math.hypot(x - clickX, y - clickY);
+            if (d < bestDist) {
+                bestDist = d;
+                best = code;
+            }
+        }
+
+        // Select only if click is near a car
+        if (best && bestDist <= 16) {
+            this.selectedDrivers = [best];
+            this.updateLeaderboard(this.currentTelemetry.frame.drivers);
+            this.drawFrame();
+        }
     }
     
     updateConnectionStatus(connected) {
@@ -212,6 +247,23 @@ class ChronosF1Enhanced {
         // Show strategy insights section if Langflow is enabled
         if (data.langflow) {
             document.getElementById('strategyInsightsSection').style.display = 'block';
+        }
+
+        // Enable optional panels when supported
+        const debriefSection = document.getElementById('debriefSection');
+        if (debriefSection) debriefSection.style.display = data.race_debrief ? 'block' : 'none';
+        const ghostSection = document.getElementById('ghostSection');
+        if (ghostSection) ghostSection.style.display = data.ghost_engine ? 'block' : 'none';
+
+        // Sync current commentary mode if provided
+        if (data.current_mode) {
+            currentCommentaryMode = data.current_mode;
+            const fanBtn = document.getElementById('fanModeBtn');
+            const engBtn = document.getElementById('engineerModeBtn');
+            if (fanBtn && engBtn) {
+                fanBtn.classList.toggle('active', currentCommentaryMode === 'fan');
+                engBtn.classList.toggle('active', currentCommentaryMode === 'engineer');
+            }
         }
     }
     
@@ -440,12 +492,25 @@ class ChronosF1Enhanced {
         document.getElementById('raceDate').textContent = this.raceData.date;
         document.getElementById('totalLaps').textContent = this.raceData.totalLaps;
         document.getElementById('sessionTotalLaps').textContent = this.raceData.totalLaps;
+
+        // Frame-accurate progress slider
+        const slider = document.getElementById('progressSlider');
+        if (slider) {
+            slider.max = String(Math.max(0, (this.raceData.totalFrames || 0) - 1));
+            slider.value = '0';
+        }
         
         // Show all sections
         document.getElementById('raceInfoSection').style.display = 'block';
         document.getElementById('leaderboardSection').style.display = 'block';
         document.getElementById('raceControlSection').style.display = 'block';
         document.getElementById('aiCommentarySection').style.display = 'block';
+
+        // Optional feature panels (availability depends on server-side features)
+        const debriefSection = document.getElementById('debriefSection');
+        if (debriefSection) debriefSection.style.display = 'block';
+        const ghostSection = document.getElementById('ghostSection');
+        if (ghostSection) ghostSection.style.display = 'block';
         
         if (this.raceData.hasWeather) {
             document.getElementById('weatherSection').style.display = 'block';
@@ -455,6 +520,12 @@ class ChronosF1Enhanced {
         if (this.analysisInterval) {
             clearInterval(this.analysisInterval);
         }
+        // Prime the UI immediately so it doesn't look stuck.
+        const insightsBox = document.getElementById('strategyInsights');
+        if (insightsBox && !insightsBox.innerHTML.trim()) {
+            insightsBox.innerHTML = '<div class="insight-item">Waiting for analysis data...</div>';
+        }
+        this.socket.emit('get_analysis_results');
         this.analysisInterval = setInterval(() => {
             this.socket.emit('get_analysis_results');
         }, 15000); // Every 15 seconds
@@ -473,32 +544,6 @@ class ChronosF1Enhanced {
         this.resizeCanvas();
         
         console.log('Viewer initialized successfully');
-    }
-    
-    showRaceInfo() {
-        document.getElementById('eventName').textContent = this.raceData.eventName;
-        document.getElementById('circuitName').textContent = this.raceData.circuitName;
-        document.getElementById('raceDate').textContent = this.raceData.date;
-        document.getElementById('totalLaps').textContent = this.raceData.totalLaps;
-        document.getElementById('sessionTotalLaps').textContent = this.raceData.totalLaps;
-        
-        document.getElementById('raceInfoSection').style.display = 'block';
-        document.getElementById('leaderboardSection').style.display = 'block';
-        document.getElementById('raceControlSection').style.display = 'block';
-        document.getElementById('aiCommentarySection').style.display = 'block';
-        
-        if (this.raceData.hasWeather) {
-            document.getElementById('weatherSection').style.display = 'block';
-        }
-    }
-    
-    initializeViewer() {
-        document.getElementById('loadingScreen').style.display = 'none';
-        this.canvas.style.display = 'block';
-        document.getElementById('sessionInfo').style.display = 'block';
-        document.getElementById('controls').style.display = 'flex';
-        
-        this.resizeCanvas();
     }
     
     resizeCanvas() {
@@ -547,9 +592,13 @@ class ChronosF1Enhanced {
                 `${data.weather.windSpeed} km/h ${data.weather.windDirection}`;
         }
         
-        // Progress
-        const progress = (data.frameIndex / data.totalFrames) * 100;
-        document.getElementById('progressSlider').value = progress;
+        // Progress (frame-accurate)
+        const slider = document.getElementById('progressSlider');
+        if (slider) {
+            const max = Math.max(0, (data.totalFrames || 0) - 1);
+            if (parseInt(slider.max, 10) !== max) slider.max = String(max);
+            slider.value = String(data.frameIndex || 0);
+        }
         document.getElementById('currentFrame').textContent = data.frameIndex;
         document.getElementById('totalFrames').textContent = data.totalFrames;
         
@@ -736,6 +785,11 @@ class ChronosF1Enhanced {
         if (this.currentTelemetry.frame.safetyCar) {
             this.drawSafetyCar(this.currentTelemetry.frame.safetyCar);
         }
+
+        // Draw ghost overlay (fastest-lap reference) if enabled
+        if (this.ghostEnabled && this.ghostPosition && this.ghostPosition.visible) {
+            this.drawGhost(this.ghostPosition);
+        }
         
         // Draw cars
         const drivers = this.currentTelemetry.frame.drivers;
@@ -744,6 +798,41 @@ class ChronosF1Enhanced {
                 this.drawCar(data.x, data.y, code, data);
             });
         }
+    }
+
+    drawGhost(pos) {
+        const x = pos.x * this.trackScale + this.trackOffsetX;
+        const y = pos.y * this.trackScale + this.trackOffsetY;
+
+        this.ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 10, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+        this.ctx.lineWidth = 3;
+        this.ctx.font = 'bold 10px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'bottom';
+        this.ctx.strokeText('GHOST', x, y - 14);
+        this.ctx.fillText('GHOST', x, y - 14);
+    }
+
+    setGhostEnabled(enabled) {
+        this.ghostEnabled = !!enabled;
+        this.drawFrame();
+    }
+
+    setGhostData(data) {
+        if (!data) return;
+        if (data.ghost_position) this.ghostPosition = data.ghost_position;
+        if (data.delta) this.ghostDelta = data.delta;
+        if (this.ghostEnabled) this.drawFrame();
     }
     
     drawTrack() {
@@ -998,7 +1087,7 @@ class ChronosF1Enhanced {
     
     seek(progress) {
         if (!this.raceData) return;
-        const frameIndex = Math.floor((progress / 100) * this.raceData.totalFrames);
+        const frameIndex = Math.max(0, Math.min(progress, (this.raceData.totalFrames || 1) - 1));
         this.socket.emit('seek', { frameIndex });
     }
     
@@ -1009,5 +1098,203 @@ class ChronosF1Enhanced {
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    new ChronosF1Enhanced();
+    window.chronos = new ChronosF1Enhanced();
 });
+
+
+// ===== TTS COMMENTARY INTEGRATION =====
+class TTSCommentary {
+    constructor() {
+        this.synth = window.speechSynthesis;
+        this.enabled = true;
+        this.voice = null;
+        this.rate = 1.0;
+        this.volume = 0.8;
+        this.initVoices();
+        if (this.synth.onvoiceschanged !== undefined) {
+            this.synth.onvoiceschanged = () => this.initVoices();
+        }
+    }
+    
+    initVoices() {
+        const voices = this.synth.getVoices();
+        const preferredVoices = ['Google UK English Male', 'Google US English', 'Microsoft David - English (United States)', 'Alex', 'Daniel'];
+        for (const preferred of preferredVoices) {
+            const found = voices.find(v => v.name === preferred);
+            if (found) {
+                this.voice = found;
+                console.log(`✅ TTS Voice: ${found.name}`);
+                return;
+            }
+        }
+        const englishVoice = voices.find(v => v.lang.startsWith('en'));
+        if (englishVoice) this.voice = englishVoice;
+    }
+    
+    speak(text, mode = 'fan') {
+        if (!this.enabled || !this.synth) return;
+        this.synth.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (this.voice) utterance.voice = this.voice;
+        utterance.rate = mode === 'engineer' ? 0.95 : 1.0;
+        utterance.volume = this.volume;
+        utterance.onstart = () => console.log('🔊 Speaking:', text.substring(0, 50) + '...');
+        this.synth.speak(utterance);
+    }
+    
+    toggle() {
+        this.enabled = !this.enabled;
+        if (!this.enabled) this.synth.cancel();
+        return this.enabled;
+    }
+}
+
+// Global TTS instance
+window.ttsCommentary = new TTSCommentary();
+
+// ===== NEW FEATURES INTEGRATION =====
+let currentCommentaryMode = 'fan';
+let ghostEnabled = false;
+
+// Initialize new features
+function initializeNewFeatures() {
+    console.log('🚀 Initializing new features...');
+    
+    // Listen for AI commentary with TTS
+    if (window.chronos && window.chronos.socket) {
+        window.chronos.socket.on('ai_commentary', (data) => {
+            console.log('🎙️ AI Commentary:', data.text);
+            // Speak the commentary
+            if (window.ttsCommentary && data.text) {
+                window.ttsCommentary.speak(data.text, data.mode || currentCommentaryMode);
+            }
+        });
+        
+        // Listen for commentary mode changes
+        window.chronos.socket.on('commentary_mode_changed', (data) => {
+            currentCommentaryMode = data.mode;
+            console.log('Mode changed to:', data.mode);
+        });
+        
+        // Listen for race debrief
+        window.chronos.socket.on('race_debrief', (debrief) => {
+            console.log('📊 Race Debrief received');
+            displayRaceDebrief(debrief);
+        });
+        
+        // Listen for ghost updates
+        window.chronos.socket.on('ghost_update', (data) => {
+            if (window.chronos && typeof window.chronos.setGhostData === 'function') {
+                window.chronos.setGhostData(data);
+            }
+            if (ghostEnabled) updateGhostDisplay(data);
+        });
+
+        // Ghost status (enabled + reference driver)
+        window.chronos.socket.on('ghost_status', (data) => {
+            const ref = document.getElementById('ghostRef');
+            if (ref && data && data.driver) ref.textContent = data.driver;
+        });
+        
+        // Listen for replay completion
+        window.chronos.socket.on('replay_completed', () => {
+            console.log('🏁 Replay completed');
+            setTimeout(() => requestRaceDebrief(), 1000);
+        });
+    }
+    
+    console.log('✅ New features initialized');
+}
+
+// Set commentary mode
+function setCommentaryMode(mode) {
+    if (window.chronos && window.chronos.socket) {
+        window.chronos.socket.emit('set_commentary_mode', { mode: mode });
+        currentCommentaryMode = mode;
+    }
+
+    const fanBtn = document.getElementById('fanModeBtn');
+    const engBtn = document.getElementById('engineerModeBtn');
+    if (fanBtn && engBtn) {
+        fanBtn.classList.toggle('active', mode === 'fan');
+        engBtn.classList.toggle('active', mode === 'engineer');
+    }
+}
+
+// Request race debrief
+function requestRaceDebrief() {
+    if (window.chronos && window.chronos.socket) {
+        window.chronos.socket.emit('request_race_debrief');
+    }
+}
+
+// Display race debrief
+function displayRaceDebrief(debrief) {
+    const modalHTML = `
+        <div id="debriefModal" class="modal active">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🏁 Race Debrief</h2>
+                    <button class="close-btn" onclick="closeDebriefModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <h3>${debrief.race_info.event}</h3>
+                    <p><strong>Best Strategy:</strong> ${debrief.best_strategy}</p>
+                    <p><strong>Most Aggressive:</strong> ${debrief.most_aggressive_driver}</p>
+                    <p><strong>Summary:</strong> ${debrief.race_summary}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+function closeDebriefModal() {
+    const modal = document.getElementById('debriefModal');
+    if (modal) modal.remove();
+}
+
+// Toggle ghost
+function toggleGhost(enabled) {
+    ghostEnabled = enabled;
+    if (window.chronos && window.chronos.socket) {
+        window.chronos.socket.emit('toggle_ghost', { enabled: enabled });
+    }
+    if (window.chronos && typeof window.chronos.setGhostEnabled === 'function') {
+        window.chronos.setGhostEnabled(enabled);
+    }
+
+    const text = document.getElementById('ghostToggleText');
+    if (text) text.textContent = enabled ? 'Disable Ghost' : 'Enable Ghost';
+}
+
+// Update ghost display
+function updateGhostDisplay(data) {
+    // Update ghost delta display if panel exists
+    const lapDelta = document.getElementById('lapDelta');
+    if (lapDelta && data.delta) {
+        const sign = data.delta.lap_delta >= 0 ? '+' : '';
+        lapDelta.textContent = `${sign}${data.delta.lap_delta.toFixed(3)}`;
+        lapDelta.className = `delta-value ${data.delta.delta_color}`;
+    }
+}
+
+// Toggle TTS
+function toggleTTS() {
+    if (window.ttsCommentary) {
+        const enabled = window.ttsCommentary.toggle();
+
+        const btn = document.getElementById('ttsToggle');
+        const text = document.getElementById('ttsToggleText');
+        if (btn) btn.classList.toggle('active', enabled);
+        if (text) text.textContent = enabled ? 'Voice On' : 'Voice Off';
+        console.log(`🔊 TTS ${enabled ? 'enabled' : 'disabled'}`);
+    }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeNewFeatures);
+} else {
+    initializeNewFeatures();
+}
