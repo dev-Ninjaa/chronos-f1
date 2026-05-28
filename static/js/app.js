@@ -10,11 +10,22 @@ class ChronosF1Enhanced {
         this.isPlaying = false;
         this.selectedDrivers = [];
         this.analysisInterval = null;  // For Langflow analysis updates
+        this.comparisonInterval = null;  // For telemetry comparison updates
 
         // Ghost comparison overlay
         this.ghostEnabled = false;
         this.ghostPosition = null;
         this.ghostDelta = null;
+        
+        // Telemetry comparison
+        this.showComparison = false;
+        this.comparisonHistory = {
+            speed: [],
+            throttle: [],
+            brake: [],
+            gear: []
+        };
+        this.maxHistoryPoints = 100;  // Keep last 100 data points
         
         // Display toggles
         this.showDrs = true;
@@ -72,6 +83,12 @@ class ChronosF1Enhanced {
             console.log('📊 Analysis Results:', data);
             this.displayAnalysisResults(data.results);
         });
+        
+        this.socket.on('driver_comparison_data', (data) => {
+            console.log('📊 Driver Comparison Data:', data);
+            this.updateTelemetryComparison(data);
+        });
+        
         this.socket.on('playback_status', (data) => {
             console.log('▶️ Playback status:', data);
             this.handlePlaybackStatus(data);
@@ -247,6 +264,16 @@ class ChronosF1Enhanced {
         // Show strategy insights section if Langflow is enabled
         if (data.langflow) {
             document.getElementById('strategyInsightsSection').style.display = 'block';
+        }
+        
+        // Show regulations section if Docling is enabled
+        if (data.docling) {
+            document.getElementById('regulationsSection').style.display = 'block';
+            const regCount = document.getElementById('regulationsCount');
+            if (regCount && data.regulations_count) {
+                regCount.textContent = `${data.regulations_count} sections loaded`;
+            }
+            console.log(`📚 Docling enabled: ${data.regulations_count} regulation sections loaded`);
         }
 
         // Enable optional panels when supported
@@ -503,6 +530,7 @@ class ChronosF1Enhanced {
         // Show all sections
         document.getElementById('raceInfoSection').style.display = 'block';
         document.getElementById('leaderboardSection').style.display = 'block';
+        document.getElementById('tyreStrategySection').style.display = 'block';
         document.getElementById('raceControlSection').style.display = 'block';
         document.getElementById('aiCommentarySection').style.display = 'block';
 
@@ -563,11 +591,13 @@ class ChronosF1Enhanced {
             hasTrackData: !!data.trackData,
             trackPoints: data.trackData?.x?.length || 0,
             drivers: Object.keys(data.frame?.drivers || {}).length,
-            colors: Object.keys(data.driverColors || {}).length
+            colors: Object.keys(data.driverColors || {}).length,
+            hasTyreHealth: !!data.tyreHealthData
         });
         
         this.currentTelemetry = data;
         this.updateUI(data);
+        this.updateTyreStrategy(data);
         this.drawFrame();
     }
     
@@ -621,6 +651,194 @@ class ChronosF1Enhanced {
             '7': 'VSC'
         };
         return statusMap[status] || 'GREEN';
+    }
+    
+    
+    updateTelemetryComparison(data) {
+        if (!data || !data.drivers || data.drivers.length < 2) {
+            return;
+        }
+        
+        // Show comparison panel
+        const panel = document.getElementById('telemetryComparison');
+        if (panel) {
+            panel.style.display = 'block';
+            this.showComparison = true;
+        }
+        
+        // Update driver badges
+        const driversDiv = document.getElementById('comparisonDrivers');
+        if (driversDiv) {
+            driversDiv.innerHTML = '';
+            data.drivers.forEach(driver => {
+                const badge = document.createElement('div');
+                badge.className = 'comparison-driver-badge';
+                badge.style.borderColor = driver.color;
+                badge.style.color = driver.color;
+                badge.innerHTML = `
+                    <div class="driver-color-dot" style="background: ${driver.color}"></div>
+                    <span>${driver.code}</span>
+                    <span style="opacity: 0.7; font-size: 0.8rem;">P${driver.position}</span>
+                `;
+                driversDiv.appendChild(badge);
+            });
+        }
+        
+        // Add data to history
+        const dataPoint = {
+            timestamp: data.timestamp,
+            drivers: {}
+        };
+        
+        data.drivers.forEach(driver => {
+            dataPoint.drivers[driver.code] = {
+                speed: driver.speed,
+                throttle: driver.throttle,
+                brake: driver.brake,
+                gear: driver.gear,
+                color: driver.color
+            };
+        });
+        
+        // Add to history and limit size
+        this.comparisonHistory.speed.push(dataPoint);
+        this.comparisonHistory.throttle.push(dataPoint);
+        this.comparisonHistory.brake.push(dataPoint);
+        this.comparisonHistory.gear.push(dataPoint);
+        
+        if (this.comparisonHistory.speed.length > this.maxHistoryPoints) {
+            this.comparisonHistory.speed.shift();
+            this.comparisonHistory.throttle.shift();
+            this.comparisonHistory.brake.shift();
+            this.comparisonHistory.gear.shift();
+        }
+        
+        // Draw charts
+        this.drawComparisonChart('speedChart', this.comparisonHistory.speed, 'speed', 0, 350);
+        this.drawComparisonChart('throttleChart', this.comparisonHistory.throttle, 'throttle', 0, 100);
+        this.drawComparisonChart('brakeChart', this.comparisonHistory.brake, 'brake', 0, 1);
+        this.drawComparisonChart('gearChart', this.comparisonHistory.gear, 'gear', 0, 8);
+        
+        // Update stats
+        this.updateComparisonStats(data);
+    }
+    
+    drawComparisonChart(canvasId, history, metric, minY, maxY) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        if (history.length < 2) return;
+        
+        // Draw grid
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+            const y = (height / 4) * i;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
+        }
+        
+        // Get all driver codes from first data point
+        const firstPoint = history[0];
+        const driverCodes = Object.keys(firstPoint.drivers);
+        
+        // Draw line for each driver
+        driverCodes.forEach(code => {
+            const color = firstPoint.drivers[code].color;
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            let started = false;
+            history.forEach((point, index) => {
+                if (!point.drivers[code]) return;
+                
+                const value = point.drivers[code][metric];
+                const x = (index / (history.length - 1)) * width;
+                const y = height - ((value - minY) / (maxY - minY)) * height;
+                
+                if (!started) {
+                    ctx.moveTo(x, y);
+                    started = true;
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw current value label
+            const lastPoint = history[history.length - 1];
+            if (lastPoint.drivers[code]) {
+                const value = lastPoint.drivers[code][metric];
+                const y = height - ((value - minY) / (maxY - minY)) * height;
+                
+                ctx.fillStyle = color;
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'right';
+                ctx.fillText(Math.round(value), width - 5, y);
+            }
+        });
+    }
+    
+    updateComparisonStats(data) {
+        const statsDiv = document.getElementById('telemetryStats');
+        if (!statsDiv || !data.drivers || data.drivers.length < 2) return;
+        
+        const driver1 = data.drivers[0];
+        const driver2 = data.drivers[1];
+        
+        const speedDiff = (driver1.speed - driver2.speed).toFixed(1);
+        const throttleDiff = (driver1.throttle - driver2.throttle).toFixed(1);
+        const gearDiff = driver1.gear - driver2.gear;
+        
+        statsDiv.innerHTML = `
+            <div class="stat-row">
+                <span class="stat-label">Speed Difference</span>
+                <span class="stat-value" style="color: ${speedDiff > 0 ? driver1.color : driver2.color}">
+                    ${Math.abs(speedDiff)} km/h
+                </span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Throttle Difference</span>
+                <span class="stat-value" style="color: ${throttleDiff > 0 ? driver1.color : driver2.color}">
+                    ${Math.abs(throttleDiff)}%
+                </span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Position Gap</span>
+                <span class="stat-value">
+                    ${Math.abs(driver1.position - driver2.position)} positions
+                </span>
+            </div>
+            ${driver1.tyreHealth && driver2.tyreHealth ? `
+            <div class="stat-row">
+                <span class="stat-label">Tyre Health</span>
+                <div class="stat-values">
+                    <span style="color: ${driver1.color}">${driver1.tyreHealth.health.toFixed(0)}%</span>
+                    <span style="color: ${driver2.color}">${driver2.tyreHealth.health.toFixed(0)}%</span>
+                </div>
+            </div>
+            ` : ''}
+        `;
+    }
+    
+    requestDriverComparison() {
+        if (this.selectedDrivers.length >= 2) {
+            this.socket.emit('get_driver_comparison', {
+                drivers: this.selectedDrivers
+            });
+        }
     }
     
     updateLeaderboard(drivers) {
@@ -721,9 +939,112 @@ class ChronosF1Enhanced {
                     this.selectedDrivers = [code];
                 }
                 this.updateLeaderboard(drivers);
+                
+                // Request comparison if 2+ drivers selected
+                if (this.selectedDrivers.length >= 2) {
+                    this.requestDriverComparison();
+                    
+                    // Start continuous comparison updates
+                    if (this.comparisonInterval) {
+                        clearInterval(this.comparisonInterval);
+                    }
+                    this.comparisonInterval = setInterval(() => {
+                        if (this.selectedDrivers.length >= 2) {
+                            this.requestDriverComparison();
+                        }
+                    }, 500);  // Update every 500ms
+                } else {
+                    // Close comparison if less than 2 drivers
+                    if (this.comparisonInterval) {
+                        clearInterval(this.comparisonInterval);
+                        this.comparisonInterval = null;
+                    }
+                    const panel = document.getElementById('telemetryComparison');
+                    if (panel) {
+                        panel.style.display = 'none';
+                    }
+                    this.showComparison = false;
+                    this.comparisonHistory = {
+                        speed: [],
+                        throttle: [],
+                        brake: [],
+                        gear: []
+                    };
+                }
             });
             
             leaderboard.appendChild(item);
+        });
+    }
+    
+    
+    updateTyreStrategy(data) {
+        if (!data.tyreHealthData) {
+            return;
+        }
+        
+        const panel = document.getElementById('tyreStrategyPanel');
+        if (!panel) return;
+        
+        const drivers = data.frame.drivers;
+        const tyreHealthData = data.tyreHealthData;
+        
+        // Sort by position
+        const sortedDrivers = Object.entries(drivers).sort((a, b) => {
+            return a[1].position - b[1].position;
+        });
+        
+        panel.innerHTML = '';
+        
+        sortedDrivers.forEach(([code, driverData]) => {
+            const healthData = tyreHealthData[code];
+            if (!healthData) return;
+            
+            const health = healthData.health;
+            const compound = healthData.compound;
+            const tyreLife = healthData.tyreLife;
+            const remainingLaps = healthData.remainingLaps;
+            const baseLife = healthData.baseLife;
+            
+            // Determine health class
+            let healthClass = 'excellent';
+            if (health <= 20) healthClass = 'critical';
+            else if (health <= 40) healthClass = 'warning';
+            else if (health <= 70) healthClass = 'good';
+            
+            // Determine if pit stop recommended
+            const shouldPit = health < 30 || remainingLaps < 5;
+            
+            // Get driver color
+            const driverColor = this.getDriverColor(code);
+            
+            const item = document.createElement('div');
+            item.className = 'tyre-strategy-item';
+            item.style.borderLeftColor = driverColor;
+            
+            item.innerHTML = `
+                <div class="tyre-strategy-header">
+                    <div class="tyre-driver-info">
+                        <span class="tyre-driver-code" style="color: ${driverColor}">${code}</span>
+                        <span class="tyre-compound-badge ${compound}">${compound}</span>
+                        <span class="tyre-age">${tyreLife} laps</span>
+                    </div>
+                    <span class="tyre-health-value ${healthClass}">${health.toFixed(0)}%</span>
+                </div>
+                <div class="tyre-health-display">
+                    <div class="tyre-health-bar-container">
+                        <div class="tyre-health-bar-fill ${healthClass}" style="width: ${health}%"></div>
+                    </div>
+                    <div class="tyre-health-stats">
+                        <span class="tyre-remaining-laps">
+                            ${remainingLaps} / ${baseLife} laps remaining
+                        </span>
+                    </div>
+                </div>
+                ${shouldPit ? '<div class="tyre-pit-recommendation">⚠️ PIT WINDOW RECOMMENDED</div>' : ''}
+            `;
+            
+            panel.appendChild(item);
         });
     }
     
@@ -1184,16 +1505,24 @@ function initializeNewFeatures() {
         
         // Listen for ghost updates
         window.chronos.socket.on('ghost_update', (data) => {
+            console.log('👻 Ghost update received:', data);
             if (window.chronos && typeof window.chronos.setGhostData === 'function') {
                 window.chronos.setGhostData(data);
             }
-            if (ghostEnabled) updateGhostDisplay(data);
+            // Always update display if data is received (backend only sends when enabled)
+            updateGhostDisplay(data);
         });
 
-        // Ghost status (enabled + reference driver)
+        // Listen for ghost status (enabled + reference driver)
         window.chronos.socket.on('ghost_status', (data) => {
             const ref = document.getElementById('ghostRef');
             if (ref && data && data.driver) ref.textContent = data.driver;
+        });
+        
+        // Listen for regulation context updates
+        window.chronos.socket.on('regulation_context', (data) => {
+            console.log('📚 Regulation context received:', data);
+            displayRegulationContext(data);
         });
         
         // Listen for replay completion
@@ -1266,17 +1595,105 @@ function toggleGhost(enabled) {
 
     const text = document.getElementById('ghostToggleText');
     if (text) text.textContent = enabled ? 'Disable Ghost' : 'Enable Ghost';
+    
+    const panel = document.getElementById('ghostPanel');
+    if (panel) panel.style.display = enabled ? 'block' : 'none';
 }
 
 // Update ghost display
 function updateGhostDisplay(data) {
-    // Update ghost delta display if panel exists
-    const lapDelta = document.getElementById('lapDelta');
-    if (lapDelta && data.delta) {
-        const sign = data.delta.lap_delta >= 0 ? '+' : '';
-        lapDelta.textContent = `${sign}${data.delta.lap_delta.toFixed(3)}`;
-        lapDelta.className = `delta-value ${data.delta.delta_color}`;
+    console.log('🎯 updateGhostDisplay called with data:', data);
+    
+    if (!data || !data.delta) {
+        console.warn('⚠️ No delta data in ghost update');
+        return;
     }
+    
+    const delta = data.delta;
+    console.log('📊 Delta data:', delta);
+    
+    // Update lap delta
+    const lapDelta = document.getElementById('lapDelta');
+    if (lapDelta) {
+        const sign = delta.lap_delta >= 0 ? '+' : '';
+        lapDelta.textContent = `${sign}${delta.lap_delta.toFixed(3)}`;
+        lapDelta.className = `delta-value ${delta.delta_color}`;
+        console.log('✅ Updated lap delta:', lapDelta.textContent);
+    } else {
+        console.warn('⚠️ lapDelta element not found');
+    }
+    
+    // Update speed differential
+    const speedDelta = document.getElementById('speedDelta');
+    if (speedDelta) {
+        const sign = delta.speed_diff >= 0 ? '+' : '';
+        speedDelta.textContent = `${sign}${Math.round(delta.speed_diff)} km/h`;
+        
+        // Color based on speed difference
+        if (Math.abs(delta.speed_diff) < 5) {
+            speedDelta.style.color = '#fbbf24'; // Gold - similar speed
+        } else if (delta.speed_diff > 0) {
+            speedDelta.style.color = '#4ade80'; // Green - faster
+        } else {
+            speedDelta.style.color = '#ef4444'; // Red - slower
+        }
+        console.log('✅ Updated speed delta:', speedDelta.textContent);
+    } else {
+        console.warn('⚠️ speedDelta element not found');
+    }
+    
+    // Update sector deltas
+    if (delta.sector_deltas && delta.sector_deltas.length >= 3) {
+        console.log('📍 Updating sector deltas:', delta.sector_deltas);
+        for (let i = 0; i < 3; i++) {
+            const sectorDelta = delta.sector_deltas[i];
+            const sectorEl = document.getElementById(`sector${i + 1}Delta`);
+            
+            if (sectorEl) {
+                if (Math.abs(sectorDelta) < 0.001) {
+                    sectorEl.textContent = '-';
+                    sectorEl.className = 'delta-value';
+                } else {
+                    const sign = sectorDelta >= 0 ? '+' : '';
+                    sectorEl.textContent = `${sign}${sectorDelta.toFixed(3)}`;
+                    
+                    // Color based on sector performance
+                    if (Math.abs(sectorDelta) < 0.05) {
+                        sectorEl.className = 'delta-value gold';
+                    } else if (sectorDelta < 0) {
+                        sectorEl.className = 'delta-value green';
+                    } else {
+                        sectorEl.className = 'delta-value red';
+                    }
+                }
+                console.log(`✅ Updated sector ${i + 1}:`, sectorEl.textContent);
+            } else {
+                console.warn(`⚠️ sector${i + 1}Delta element not found`);
+            }
+        }
+    }
+    
+    // Update current sector highlight
+    if (delta.current_sector !== undefined) {
+        console.log('🎯 Current sector:', delta.current_sector + 1);
+        for (let i = 0; i < 3; i++) {
+            const sectorEl = document.getElementById(`sector${i + 1}Delta`);
+            if (sectorEl) {
+                const parent = sectorEl.parentElement;
+                if (parent) {
+                    if (i === delta.current_sector) {
+                        parent.style.background = 'rgba(255,255,255,0.15)';
+                        parent.style.borderLeft = '2px solid #4ade80';
+                    } else {
+                        parent.style.background = 'rgba(255,255,255,0.05)';
+                        parent.style.borderLeft = 'none';
+                    }
+                }
+            }
+        }
+    }
+    
+    console.log('✅ Ghost display update complete');
 }
 
 // Toggle TTS
@@ -1292,9 +1709,93 @@ function toggleTTS() {
     }
 }
 
+// Close telemetry comparison
+function closeTelemetryComparison() {
+    const panel = document.getElementById('telemetryComparison');
+    if (panel) {
+        panel.style.display = 'none';
+    }
+    
+    if (window.chronos) {
+        window.chronos.showComparison = false;
+        window.chronos.selectedDrivers = [];
+        window.chronos.comparisonHistory = {
+            speed: [],
+            throttle: [],
+            brake: [],
+            gear: []
+        };
+        
+        if (window.chronos.comparisonInterval) {
+            clearInterval(window.chronos.comparisonInterval);
+            window.chronos.comparisonInterval = null;
+        }
+        
+        // Refresh leaderboard to clear selection
+        if (window.chronos.currentTelemetry && window.chronos.currentTelemetry.frame) {
+            window.chronos.updateLeaderboard(window.chronos.currentTelemetry.frame.drivers);
+        }
+        
+        // Redraw track to clear selection highlights
+        window.chronos.drawFrame();
+    }
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeNewFeatures);
 } else {
     initializeNewFeatures();
+}
+
+
+// Display regulation context in UI
+function displayRegulationContext(data) {
+    const regulationsDisplay = document.getElementById('regulationsDisplay');
+    if (!regulationsDisplay) {
+        console.warn('⚠️ regulationsDisplay element not found');
+        return;
+    }
+    
+    if (!data || !data.regulations || data.regulations.length === 0) {
+        console.log('📚 No regulations to display');
+        return;
+    }
+    
+    console.log(`📚 Displaying ${data.regulations.length} regulation(s)`);
+    
+    // Clear existing content
+    regulationsDisplay.innerHTML = '';
+    
+    // Add each regulation
+    data.regulations.forEach(reg => {
+        const regItem = document.createElement('div');
+        regItem.className = 'regulation-item' + (reg.active ? ' active' : '');
+        
+        regItem.innerHTML = `
+            <div class="regulation-title">${reg.title}</div>
+            <div class="regulation-content">${reg.content}</div>
+            <div class="regulation-timestamp">${formatTime(data.timestamp)}</div>
+        `;
+        
+        regulationsDisplay.appendChild(regItem);
+        
+        console.log(`✅ Displayed regulation: ${reg.title}`);
+    });
+    
+    // Auto-remove after 30 seconds
+    setTimeout(() => {
+        const items = regulationsDisplay.querySelectorAll('.regulation-item.active');
+        items.forEach(item => {
+            item.classList.remove('active');
+            item.style.opacity = '0.5';
+        });
+    }, 30000);
+}
+
+// Helper function to format time
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
