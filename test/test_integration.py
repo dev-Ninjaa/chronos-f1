@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Integration test for Chronos F1
 Tests the complete workflow from data loading to AI commentary
@@ -71,7 +71,7 @@ def test_full_workflow():
             print_success("Commentary manager initialized with regulations")
         except Exception as e:
             print(f"⚠️  Commentary manager initialization: {e}")
-            print("   (This is OK if GEMINI_API_KEY is not set)")
+            print("   (This is OK if Ollama is not running)")
         
         # 4. Test workflow execution
         print("\n🔄 Testing workflow execution...")

@@ -181,20 +181,9 @@ def test_ai_commentary():
         from ai.aiCommentary import CommentaryManager
         from ai.graniteClient import GraniteClient
         
-        # Check if API key is configured
-        from dotenv import load_dotenv
-        load_dotenv()
-        
-        api_key = os.getenv('GEMINI_API_KEY')
-        if not api_key:
-            print_warning("GEMINI_API_KEY not set in .env file")
-            print("   AI commentary will use fallback mode")
-            print("   To enable full AI: Add GEMINI_API_KEY to .env")
-            return True  # Not a failure, just a warning
-        
         # Initialize client
         client = GraniteClient()
-        print_success("GraniteClient (Gemini) initialized")
+        print_success("GraniteClient (Ollama) initialized")
         
         # Initialize commentary manager
         manager = CommentaryManager()
