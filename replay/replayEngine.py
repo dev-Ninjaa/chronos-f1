@@ -109,7 +109,10 @@ class ReplayEngine:
                 if self.tyreModel:
                     tyreHealth = self.tyreModel.getHealthForFrame(code, frame)
                     if tyreHealth:
-                        frame['drivers'][code]['tyreHealth'] = tyreHealth
+                        # Keep `tyreHealth` as a number for UI + intelligence engine compatibility.
+                        # Store the richer model output separately.
+                        frame['drivers'][code]['tyreHealth'] = tyreHealth.get('health')
+                        frame['drivers'][code]['tyreHealthMeta'] = tyreHealth
             
             # Get current track status
             currentTrackStatus = self._getCurrentTrackStatus(frame['t'])
