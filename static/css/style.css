@@ -750,3 +750,220 @@ body {
 .tyre-item strong {
     color: #4ade80;
 }
+
+
+/* ===== NEW FEATURES: Fan/Engineer Mode, Race Debrief, Ghost, TTS ===== */
+
+/* Commentary Mode Toggle */
+.commentary-mode-toggle {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: 2px solid #444;
+    background: #222;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mode-btn:hover {
+    background: #333;
+    border-color: #666;
+    transform: translateY(-2px);
+}
+
+.mode-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.mode-indicator {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.mode-indicator.fan {
+    background: #667eea;
+    color: white;
+}
+
+.mode-indicator.engineer {
+    background: #f093fb;
+    color: white;
+}
+
+/* Race Debrief Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+    border-radius: 12px;
+    max-width: 800px;
+    max-height: 90vh;
+    width: 90%;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+    padding: 30px;
+    overflow-y: auto;
+    max-height: calc(90vh - 180px);
+    color: #fff;
+}
+
+.debrief-section {
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+/* Ghost Delta Panel */
+.ghost-delta-panel {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #4facfe;
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 250px;
+    box-shadow: 0 10px 40px rgba(79, 172, 254, 0.3);
+    z-index: 1000;
+}
+
+.delta-value {
+    display: block;
+    font-size: 32px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+.delta-value.green {
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.delta-value.red {
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.delta-value.gold {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+/* TTS Controls */
+.tts-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.tts-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: 2px solid #444;
+    background: #222;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tts-btn.active {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    border-color: #4ade80;
+    box-shadow: 0 4px 15px rgba(74, 222, 128, 0.4);
+}
+
+.tts-indicator {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(74, 222, 128, 0.2);
+    border: 2px solid #4ade80;
+    border-radius: 6px;
+    color: #4ade80;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.tts-indicator.active {
+    display: flex;
+}
+
+.commentary-display.speaking {
+    border-color: #4ade80;
+    box-shadow: 0 10px 40px rgba(74, 222, 128, 0.4);
+}
