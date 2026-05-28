@@ -117,7 +117,7 @@ Formula 1 generates **1.5 million data points per second** during a race. Teams,
 ### 🎮 Interactive Visualization
 
 - **Dynamic track rendering** with bounds and finish line
-- **Multi-driver selection** (Shift+click for comparison)
+- **Multi-driver selection** (right-click to compare multiple drivers)
 - **Variable playback speed** (0.25x - 8x)
 - **Race control feed** with FIA messages and flags
 - **Responsive dark theme** optimized for data visibility
@@ -181,7 +181,7 @@ For detailed project setup instructions, commands, environment configuration, an
 | **Speed** | Dropdown | 0.25x to 8x playback |
 | **Seek** | Progress bar | Jump to any moment |
 | **Select Driver** | Click leaderboard | Highlight driver |
-| **Multi-Select** | Shift+Click | Compare multiple drivers |
+| **Multi-Select** | Right-Click | Compare multiple drivers |
 | **Gap Mode** | L/I buttons | Leader or Interval gaps |
 | **Toggle DRS** | DRS button | Show/hide DRS zones |
 | **Toggle Weather** | ☁️ button | Show/hide weather panel |
