@@ -38,6 +38,7 @@ intelligence_engine = None
 commentary_modes = None
 race_debrief_generator = None
 ghost_engine = None
+ghost_enabled = False  # Track if ghost comparison is enabled
 commentary_mode = "fan"  # Default: fan mode
 
 # Docling integration
@@ -66,66 +67,86 @@ try:
             print('✅ Race Debrief Generator initialized')
         except Exception as e:
             print(f'⚠️ Advanced AI features not available: {e}')
-        
-        # Initialize Docling for regulations
-        try:
-            document_processor = DocumentProcessor()
-            
-            # Load F1 regulations from markdown file
-            regulationsPath = 'documents/f1_regulations_sample.md'
-            if os.path.exists(regulationsPath):
-                print(f'📄 Loading F1 regulations from: {regulationsPath}')
-                regulationsDoc = document_processor.processDocument(regulationsPath)
-                
-                # Extract structured rules
-                extractedRules = document_processor.extractRegulationRules(regulationsDoc)
-                
-                # Build regulations knowledge base
-                basicRegulations = {
-                    'drs_rules': 'DRS can only be used when within 1 second of car ahead in designated zones',
-                    'pit_rules': 'Pit lane speed limit is 80 km/h, minimum 2 tyre compounds must be used',
-                    'tyre_rules': 'Each driver must use at least two different compounds during dry race',
-                    'safety_car_rules': 'No overtaking allowed under safety car, maintain position',
-                    'sections': regulationsDoc.get('sections', [])
-                }
-                
-                # Add extracted rules
-                for ruleType, rulesList in extractedRules.items():
-                    if rulesList:
-                        # Use first rule as summary
-                        basicRegulations[ruleType] = rulesList[0].get('content', '')[:200]
-                
-                commentary_manager.loadRegulations(basicRegulations)
-                regulations_loaded = True
-                print(f'✅ Docling integrated - {len(regulationsDoc.get("sections", []))} regulation sections loaded')
-            else:
-                print(f'⚠️ Regulations file not found: {regulationsPath}')
-                # Use basic fallback
-                basicRegulations = {
-                    'drs_rules': 'DRS can only be used when within 1 second of car ahead in designated zones',
-                    'pit_rules': 'Pit lane speed limit is 80 km/h, minimum 2 tyre compounds must be used',
-                    'tyre_rules': 'Each driver must use at least two different compounds during dry race',
-                    'safety_car_rules': 'No overtaking allowed under safety car, maintain position',
-                    'sections': []
-                }
-                commentary_manager.loadRegulations(basicRegulations)
-                regulations_loaded = True
-                print('✅ Docling integrated - Basic regulations loaded')
-        except Exception as e:
-            print(f'⚠️ Docling not available: {e}')
-        
-        # Initialize Langflow orchestrator
-        try:
-            workflow_orchestrator = F1WorkflowOrchestrator()
-            commentary_manager.setWorkflowOrchestrator(workflow_orchestrator)
-            workflows_enabled = True
-            print('✅ Langflow integrated - Workflows enabled')
-        except Exception as e:
-            print(f'⚠️ Langflow not available: {e}')
     else:
+        # Ollama not available, but still initialize commentary manager for regulations
         print('⚠️ AI Commentary disabled (Ollama not available)')
+        print('📚 Initializing CommentaryManager for regulations only...')
+        try:
+            commentary_manager = CommentaryManager()
+            print('✅ CommentaryManager initialized (regulations only)')
+        except Exception as e:
+            print(f'❌ Could not initialize CommentaryManager: {e}')
 except Exception as e:
-    print(f'⚠️ AI Features disabled: {e}')
+    print(f'⚠️ AI Features initialization error: {e}')
+    # Still try to initialize commentary manager for regulations
+    try:
+        commentary_manager = CommentaryManager()
+        print('✅ CommentaryManager initialized (regulations only)')
+    except Exception as e2:
+        print(f'❌ Could not initialize CommentaryManager: {e2}')
+
+# Initialize Docling for regulations (INDEPENDENT of Ollama/AI)
+if commentary_manager:
+    try:
+        document_processor = DocumentProcessor()
+        
+        # Load F1 regulations from markdown file
+        regulationsPath = 'documents/f1_regulations_sample.md'
+        if os.path.exists(regulationsPath):
+            print(f'📄 Loading F1 regulations from: {regulationsPath}')
+            regulationsDoc = document_processor.processDocument(regulationsPath)
+            
+            # Extract structured rules
+            extractedRules = document_processor.extractRegulationRules(regulationsDoc)
+            
+            # Build regulations knowledge base
+            basicRegulations = {
+                'drs_rules': 'DRS can only be used when within 1 second of car ahead in designated zones',
+                'pit_rules': 'Pit lane speed limit is 80 km/h, minimum 2 tyre compounds must be used',
+                'tyre_rules': 'Each driver must use at least two different compounds during dry race',
+                'safety_car_rules': 'No overtaking allowed under safety car, maintain position',
+                'sections': regulationsDoc.get('sections', [])
+            }
+            
+            # Add extracted rules
+            for ruleType, rulesList in extractedRules.items():
+                if rulesList:
+                    # Use first rule as summary
+                    basicRegulations[ruleType] = rulesList[0].get('content', '')[:200]
+            
+            commentary_manager.loadRegulations(basicRegulations)
+            regulations_loaded = True
+            print(f'✅ Docling integrated - {len(regulationsDoc.get("sections", []))} regulation sections loaded')
+        else:
+            print(f'⚠️ Regulations file not found: {regulationsPath}')
+            # Use basic fallback
+            basicRegulations = {
+                'drs_rules': 'DRS can only be used when within 1 second of car ahead in designated zones',
+                'pit_rules': 'Pit lane speed limit is 80 km/h, minimum 2 tyre compounds must be used',
+                'tyre_rules': 'Each driver must use at least two different compounds during dry race',
+                'safety_car_rules': 'No overtaking allowed under safety car, maintain position',
+                'flag_rules': 'Yellow Flag: Reduce speed, no overtaking. Red Flag: Session suspended.',
+                'sections': []
+            }
+            commentary_manager.loadRegulations(basicRegulations)
+            regulations_loaded = True
+            print('✅ Docling integrated - Basic regulations loaded')
+    except Exception as e:
+        print(f'⚠️ Docling error: {e}')
+        import traceback
+        traceback.print_exc()
+else:
+    print('❌ CommentaryManager not available - regulations cannot be loaded')
+
+# Initialize Langflow orchestrator (only if AI is enabled)
+if ai_enabled and commentary_manager:
+    try:
+        workflow_orchestrator = F1WorkflowOrchestrator()
+        commentary_manager.setWorkflowOrchestrator(workflow_orchestrator)
+        workflows_enabled = True
+        print('✅ Langflow integrated - Workflows enabled')
+    except Exception as e:
+        print(f'⚠️ Langflow not available: {e}')
 
 
 @app.route('/')
@@ -310,8 +331,13 @@ def handle_get_ai_status():
         'commentary_modes': commentary_modes is not None,
         'race_debrief': race_debrief_generator is not None,
         'ghost_engine': ghost_engine is not None,
-        'current_mode': commentary_mode
+        'ghost_enabled': ghost_enabled,
+        'current_mode': commentary_mode,
+        'regulations_count': len(commentary_manager.aiCommentary.regulationsKnowledge.get('sections', [])) if commentary_manager and regulations_loaded else 0
     })
+    
+    # Also log to console for debugging
+    print(f"📊 AI Status Check: ghost_engine={ghost_engine is not None}, ghost_enabled={ghost_enabled}, regulations_loaded={regulations_loaded}")
 
 
 @socketio.on('set_commentary_mode')
@@ -361,15 +387,21 @@ def handle_request_race_debrief():
 @socketio.on('toggle_ghost')
 def handle_toggle_ghost(data):
     """Toggle ghost comparison on/off"""
-    global ghost_engine
+    global ghost_engine, ghost_enabled
     
     enabled = data.get('enabled', False)
+    ghost_enabled = enabled
+    
+    print(f"🔄 Ghost toggle request: enabled={enabled}, ghost_engine exists={ghost_engine is not None}")
     
     if enabled and ghost_engine:
+        print(f"✅ Ghost comparison enabled - Reference: {ghost_engine.ghostDriver}")
         emit('ghost_status', {'enabled': True, 'driver': ghost_engine.ghostDriver})
     elif not enabled:
+        print("⏸️ Ghost comparison disabled")
         emit('ghost_status', {'enabled': False})
     else:
+        print("⚠️ Ghost engine not available")
         emit('error', {'message': 'Ghost engine not available'})
 
 
@@ -385,6 +417,71 @@ def handle_get_analysis_results():
         emit('analysis_results', {'results': []})
 
 
+@socketio.on('get_driver_comparison')
+def handle_get_driver_comparison(data):
+    """Get telemetry comparison data for selected drivers"""
+    if not replay_engine:
+        emit('error', {'message': 'No race loaded'})
+        return
+    
+    try:
+        driver_codes = data.get('drivers', [])
+        if not driver_codes or len(driver_codes) < 2:
+            emit('error', {'message': 'Select at least 2 drivers for comparison'})
+            return
+        
+        # Get current telemetry
+        current_telemetry = replay_engine.getCurrentTelemetry()
+        if not current_telemetry:
+            return
+        
+        frame = current_telemetry.get('frame', {})
+        drivers_data = frame.get('drivers', {})
+        
+        # Build comparison data
+        comparison = {
+            'drivers': [],
+            'timestamp': current_telemetry.get('t', 0),
+            'frameIndex': current_telemetry.get('frameIndex', 0)
+        }
+        
+        for code in driver_codes:
+            if code not in drivers_data:
+                continue
+            
+            driver_data = drivers_data[code]
+            
+            # Get tyre health if available
+            tyre_health = None
+            if replay_engine.raceData.get('tyreModel'):
+                health = replay_engine.raceData['tyreModel'].getHealthForFrame(code, frame)
+                if health:
+                    tyre_health = health
+            
+            comparison['drivers'].append({
+                'code': code,
+                'position': driver_data.get('position', 0),
+                'speed': driver_data.get('speed', 0),
+                'throttle': driver_data.get('throttle', 0),
+                'brake': driver_data.get('brake', 0),
+                'gear': driver_data.get('gear', 0),
+                'drs': driver_data.get('drs', 0),
+                'lap': driver_data.get('lap', 0),
+                'tyreLife': driver_data.get('tyreLife', 0),
+                'tyre': driver_data.get('tyre', 0),
+                'tyreHealth': tyre_health,
+                'color': current_telemetry.get('driverColors', {}).get(code, '#FFFFFF')
+            })
+        
+        emit('driver_comparison_data', comparison)
+        
+    except Exception as e:
+        print(f"❌ Error getting driver comparison: {e}")
+        import traceback
+        traceback.print_exc()
+        emit('error', {'message': f'Error getting comparison: {str(e)}'})
+
+
 @app.route('/api/process-document', methods=['POST'])
 def process_document():
     """Process F1 document with Docling"""
@@ -398,6 +495,7 @@ def process_document():
         if not filePath:
             return jsonify({'success': False, 'error': 'No file path provided'}), 400
         
+        print(f"📄 Processing document via API: {filePath}")
         docData = document_processor.processDocument(filePath)
         
         return jsonify({
@@ -409,7 +507,33 @@ def process_document():
             }
         })
     except Exception as e:
+        print(f"❌ Document processing error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/regulations/status')
+def get_regulations_status():
+    """Get current regulations status and content"""
+    if not commentary_manager or not regulations_loaded:
+        return jsonify({
+            'success': False,
+            'loaded': False,
+            'message': 'Regulations not loaded'
+        })
+    
+    regulations = commentary_manager.aiCommentary.regulationsKnowledge
+    
+    return jsonify({
+        'success': True,
+        'loaded': True,
+        'sections_count': len(regulations.get('sections', [])),
+        'rule_types': [k for k in regulations.keys() if k.endswith('_rules')],
+        'sample_rules': {
+            'drs': regulations.get('drs_rules', '')[:150],
+            'pit': regulations.get('pit_rules', '')[:150],
+            'safety_car': regulations.get('safety_car_rules', '')[:150]
+        }
+    })
 
 
 @app.route('/api/run-workflow', methods=['POST'])
@@ -444,15 +568,159 @@ def broadcast_telemetry():
     buffered_events = []
     latest_insight_for_window = None
     
+    def _extractRegulationContext(events, telemetry_data):
+        """Extract relevant regulation context based on events"""
+        if not commentary_manager or not regulations_loaded:
+            return None
+        
+        regulations = commentary_manager.aiCommentary.regulationsKnowledge
+        if not regulations:
+            return None
+        
+        context = {
+            'timestamp': telemetry_data.get('t', 0),
+            'regulations': []
+        }
+        
+        for event in events:
+            event_type = event.get('type', '') if isinstance(event, dict) else event
+            event_lower = event_type.lower()
+            
+            if 'drs' in event_lower and 'drs_rules' in regulations:
+                context['regulations'].append({
+                    'type': 'DRS',
+                    'title': 'DRS Activation Rules',
+                    'content': regulations['drs_rules'][:200],
+                    'active': True
+                })
+                print(f"📚 Sending DRS regulation context to UI")
+            
+            elif 'pit' in event_lower and 'pit_rules' in regulations:
+                context['regulations'].append({
+                    'type': 'PIT',
+                    'title': 'Pit Stop Regulations',
+                    'content': regulations['pit_rules'][:200],
+                    'active': True
+                })
+                print(f"📚 Sending Pit Stop regulation context to UI")
+            
+            elif 'safety' in event_lower and 'safety_car_rules' in regulations:
+                context['regulations'].append({
+                    'type': 'SAFETY_CAR',
+                    'title': 'Safety Car Procedure',
+                    'content': regulations['safety_car_rules'][:200],
+                    'active': True
+                })
+                print(f"📚 Sending Safety Car regulation context to UI")
+            
+            elif 'yellow_flag' in event_lower and 'flag_rules' in regulations:
+                context['regulations'].append({
+                    'type': 'YELLOW_FLAG',
+                    'title': 'Yellow Flag Rules',
+                    'content': regulations.get('flag_rules', 'Yellow Flag: Reduce speed, no overtaking')[:200],
+                    'active': True
+                })
+                print(f"📚 Sending Yellow Flag regulation context to UI")
+        
+        # Check track status for additional context
+        track_status = telemetry_data.get('trackStatus', '1')
+        if track_status in ['4', '6', '7'] and 'safety_car_rules' in regulations:
+            if not any(r['type'] == 'SAFETY_CAR' for r in context['regulations']):
+                context['regulations'].append({
+                    'type': 'SAFETY_CAR',
+                    'title': 'Safety Car Deployed',
+                    'content': regulations['safety_car_rules'][:200],
+                    'active': True
+                })
+                print(f"📚 Sending Safety Car regulation (track status) to UI")
+        
+        elif track_status == '2' and 'flag_rules' in regulations:
+            if not any(r['type'] == 'YELLOW_FLAG' for r in context['regulations']):
+                context['regulations'].append({
+                    'type': 'YELLOW_FLAG',
+                    'title': 'Yellow Flag - Caution',
+                    'content': regulations.get('flag_rules', 'Yellow Flag: Reduce speed, no overtaking')[:200],
+                    'active': True
+                })
+                print(f"📚 Sending Yellow Flag regulation (track status) to UI")
+        
+        return context if context['regulations'] else None
+    
     while True:
         try:
             with replay_lock:
                 if replay_engine and replay_engine.isPlaying():
                     telemetry_data = replay_engine.getCurrentTelemetry()
+                    
+                    # Add tyre health data to telemetry
+                    if telemetry_data and replay_engine.raceData.get('tyreModel'):
+                        tyreModel = replay_engine.raceData['tyreModel']
+                        frame = telemetry_data.get('frame', {})
+                        drivers = frame.get('drivers', {})
+                        
+                        tyreHealthData = {}
+                        for driverCode in drivers.keys():
+                            health = tyreModel.getHealthForFrame(driverCode, frame)
+                            if health:
+                                tyreHealthData[driverCode] = health
+                        
+                        telemetry_data['tyreHealthData'] = tyreHealthData
+                    
+                    telemetry_data = telemetry_data
                     if telemetry_data:
                         socketio.emit('telemetry_update', telemetry_data)
                         
-                        # Use Intelligence Engine to analyze frame (preferred)
+                        # Broadcast regulation context (independent of AI)
+                        if regulations_loaded and commentary_manager:
+                            try:
+                                # Detect events for regulation context
+                                if previous_frame:
+                                    events = commentary_manager.aiCommentary.detectEvents(telemetry_data, previous_frame)
+                                    if events:
+                                        regulation_context = _extractRegulationContext(events, telemetry_data)
+                                        if regulation_context:
+                                            socketio.emit('regulation_context', regulation_context)
+                            except Exception as e:
+                                print(f"❌ Regulation context error: {e}")
+                        
+                        # Broadcast ghost comparison if enabled (independent of AI features)
+                        if ghost_enabled and ghost_engine:
+                            try:
+                                frame = telemetry_data.get('frame', telemetry_data)
+                                drivers = frame.get('drivers', {})
+                                
+                                if not drivers:
+                                    if telemetry_data.get('frameIndex', 0) % 100 == 0:
+                                        print("⚠️ No drivers data in frame")
+                                else:
+                                    leader = min(drivers.items(), key=lambda x: x[1].get('position', 999), default=(None, {}))
+                                    if leader[0]:
+                                        leaderData = leader[1]
+                                        currentDist = leaderData.get('dist', 0)
+                                        currentTime = telemetry_data.get('t', 0)
+                                        currentSpeed = leaderData.get('speed', 0)
+                                        
+                                        # Debug log every 100 frames
+                                        if telemetry_data.get('frameIndex', 0) % 100 == 0:
+                                            print(f"👻 Ghost calc: dist={currentDist:.1f}, time={currentTime:.1f}, speed={currentSpeed:.1f}")
+                                        
+                                        ghostPos = ghost_engine.getGhostPosition(currentTime, currentDist)
+                                        delta = ghost_engine.calculateDelta(currentTime, currentDist, currentSpeed)
+                                        
+                                        if ghostPos and delta:
+                                            socketio.emit('ghost_update', {
+                                                'ghost_position': ghostPos,
+                                                'delta': delta
+                                            })
+                                        else:
+                                            if telemetry_data.get('frameIndex', 0) % 100 == 0:
+                                                print(f"⚠️ Ghost calc returned None: pos={ghostPos is not None}, delta={delta is not None}")
+                            except Exception as e:
+                                print(f"❌ Ghost comparison error: {e}")
+                                import traceback
+                                traceback.print_exc()
+                        
+                        # Use Intelligence Engine to analyze frame (for AI commentary only)
                         if intelligence_engine:
                             try:
                                 insight = intelligence_engine.analyzeFrame(telemetry_data, previous_frame)
@@ -485,30 +753,6 @@ def broadcast_telemetry():
                                         
                                         commentary_window_start = now
                                         buffered_events = []
-                                
-                                # Broadcast ghost comparison if enabled
-                                if ghost_engine:
-                                    try:
-                                        frame = telemetry_data.get('frame', telemetry_data)
-                                        drivers = frame.get('drivers', {})
-                                        
-                                        leader = min(drivers.items(), key=lambda x: x[1].get('position', 999), default=(None, {}))
-                                        if leader[0]:
-                                            leaderData = leader[1]
-                                            currentDist = leaderData.get('dist', 0)
-                                            currentTime = telemetry_data.get('t', 0)
-                                            currentSpeed = leaderData.get('speed', 0)
-                                            
-                                            ghostPos = ghost_engine.getGhostPosition(currentTime, currentDist)
-                                            delta = ghost_engine.calculateDelta(currentTime, currentDist, currentSpeed)
-                                            
-                                            if ghostPos and delta:
-                                                socketio.emit('ghost_update', {
-                                                    'ghost_position': ghostPos,
-                                                    'delta': delta
-                                                })
-                                    except Exception as e:
-                                        print(f"❌ Ghost comparison error: {e}")
                             
                             except Exception as e:
                                 print(f"❌ Intelligence Engine error: {e}")
