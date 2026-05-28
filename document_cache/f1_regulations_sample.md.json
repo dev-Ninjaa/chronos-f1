@@ -1,0 +1,207 @@
+{
+  "filePath": "documents/f1_regulations_sample.md",
+  "text": "FIA Formula 1 Technical Regulations - Key Excerpts\n\nDRS (Drag Reduction System) Rules\n\nArticle 11.2 - DRS Activation\n\nThe DRS (Drag Reduction System) may only be activated by the driver in the pre-determined DRS zones when:\n\n- The driver is within one second of the car ahead at the DRS detection point\n- The race has been running for at least two laps after the start or restart\n- No yellow flags are being displayed in the DRS zone\n- Track conditions are declared dry by Race Control\n\nArticle 11.3 - DRS Restrictions\n\nDRS must be disabled:\n\n- During Safety Car periods\n- During Virtual Safety Car periods\n- During yellow flag conditions\n- During the first two laps after race start\n- During the first two laps after a restart\n\nTyre Regulations\n\nArticle 24.1 - Tyre Compounds\n\nEach driver must use at least two different specifications of dry-weather tyres during the race, unless:\n\n- The race is suspended and cannot be restarted\n- The race is declared wet by Race Control\n- The driver fails to complete more than 50% of race distance\n\nArticle 24.2 - Tyre Allocation\n\nFor each race weekend, drivers receive:\n\n- 13 sets of dry-weather tyres (combination of Soft, Medium, Hard)\n- 4 sets of intermediate tyres\n- 3 sets of wet-weather tyres\n\nArticle 24.3 - Tyre Pressure\n\nMinimum starting tyre pressures are defined by the FIA for each race:\n\n- Front tyres: Typically 19.0-21.0 PSI\n- Rear tyres: Typically 18.0-20.0 PSI These values vary by circuit and are communicated in the race director's notes.\n\nPit Stop Regulations\n\nArticle 23.1 - Pit Lane Speed Limit\n\nThe pit lane speed limit is 80 km/h (49.7 mph) unless otherwise specified by the FIA for a particular circuit. Exceeding this limit results in:\n\n- First offense: Time penalty (typically 5 seconds)\n- Subsequent offenses: Drive-through penalty or stop-and-go penalty\n\nArticle 23.2 - Pit Stop Procedure\n\nDuring a pit stop:\n\n- The car must be stationary before any work begins\n- A maximum of 5 mechanics may work on each wheel simultaneously\n- The driver must not release the car until all wheel guns are clear\n- The car must not be released into the path of another car\n\nArticle 23.3 - Unsafe Release\n\nReleasing a car in an unsafe manner results in:\n\n- Minimum 10-second stop-and-go penalty\n- Possible further penalties if deemed dangerous\n- Team may be fined up to \u20ac25,000\n\nSafety Car Regulations\n\nArticle 39.1 - Safety Car Deployment\n\nThe Safety Car may be deployed when:\n\n- Track conditions are unsafe for racing\n- An incident requires marshals on track\n- Debris needs to be cleared\n- Weather conditions deteriorate suddenly\n\nArticle 39.2 - Safety Car Procedure\n\nWhen the Safety Car is deployed:\n\n- All cars must reduce speed and form up behind the Safety Car\n- Overtaking is forbidden except to regain lost positions\n- Lapped cars may be instructed to unlap themselves\n- Pit lane remains open unless specifically closed\n\nArticle 39.3 - Safety Car Restart\n\nThe Safety Car will return to the pits when:\n\n- Track conditions are safe\n- All marshals are clear\n- Race Control determines racing can resume The Safety Car lights will be extinguished on the lap before it returns to the pits.\n\nVirtual Safety Car (VSC)\n\nArticle 39.12 - VSC Activation\n\nThe Virtual Safety Car may be used for:\n\n- Incidents requiring brief track intervention\n- Situations not severe enough for full Safety Car\n- Quick debris removal\n\nArticle 39.13 - VSC Procedure\n\nDuring VSC:\n\n- Drivers must maintain a target lap time set by Race Control\n- Delta times are displayed on steering wheels\n- Overtaking is forbidden\n- Pit lane remains open\n- Cars must maintain relative positions\n\nFlag Signals\n\nArticle 2.5 - Flag Meanings\n\nGreen Flag: Track is clear, racing conditions normal\n\nYellow Flag: Danger on or near the track\n\n- Single waved: Reduce speed, be prepared to change direction, no overtaking\n- Double waved: Reduce speed significantly, be prepared to stop, no overtaking\n\nRed Flag: Session suspended\n\n- All cars must return to pit lane immediately\n- No overtaking permitted\n\nBlue Flag: Faster car approaching to lap\n\n- Must be shown for at least 3 marshalling posts\n- Driver must allow faster car to pass within 3 blue flag displays\n- Failure to comply: Penalty (typically 5 seconds)\n\nBlack and White Flag (Diagonal): Warning for unsportsmanlike behavior\n\n- Shown with car number\n- Next offense may result in penalty\n\nBlack Flag with Orange Circle: Mechanical problem detected\n\n- Shown with car number\n- Driver must return to pits immediately\n\nPenalty System\n\nArticle 38.3 - Time Penalties\n\n5-Second Penalty: Added to race time or served at pit stop\n\n- Minor track limits violations\n- Minor contact with another car\n- First pit lane speeding offense\n\n10-Second Penalty: Added to race time or served at pit stop\n\n- More serious track limits violations\n- Causing a collision\n- Gaining lasting advantage by leaving track\n\nDrive-Through Penalty: Must drive through pit lane at speed limit\n\n- Serious pit lane speeding\n- Ignoring blue flags\n- Unsafe release from pit stop\n\nStop-and-Go Penalty: Must stop in pit box for specified time (10-30 seconds)\n\n- Very serious offenses\n- Dangerous driving\n- Multiple offenses\n\nArticle 38.4 - Grid Penalties\n\nApplied to starting position for next race:\n\n- Engine component changes beyond allocation\n- Gearbox changes before required mileage\n- Accumulated penalty points\n\nWeight Regulations\n\nArticle 4.1 - Minimum Weight\n\nThe minimum weight of the car, without fuel but with driver, must not be less than:\n\n- 798 kg (2024 regulations) This includes:\n- Driver in racing suit\n- Seat\n- All fluids except fuel\n\nArticle 4.2 - Ballast\n\nIf the car is underweight:\n\n- Ballast may be added\n- Must be secured in a way that requires tools to remove\n- Must be placed as low as possible in the car\n\nFuel Regulations\n\nArticle 6.5 - Fuel Capacity\n\nMaximum fuel capacity: 110 kg at race start\n\nArticle 6.6 - Fuel Flow Rate\n\nMaximum fuel flow rate: 100 kg/hour\n\nArticle 6.7 - Fuel Samples\n\nThe FIA may take fuel samples at any time to verify compliance with regulations.\n\nPower Unit Regulations\n\nArticle 5.1 - Power Unit Components\n\nEach driver is allocated per season:\n\n- 3 Internal Combustion Engines (ICE)\n- 3 Motor Generator Unit-Kinetic (MGU-K)\n- 3 Motor Generator Unit-Heat (MGU-H)\n- 3 Turbochargers (TC)\n- 2 Energy Stores (ES)\n- 2 Control Electronics (CE)\n- 8 Exhaust Systems\n\nExceeding allocation results in grid penalties.\n\nAerodynamic Testing Restrictions\n\nArticle 22.1 - Wind Tunnel Testing\n\nTeams are allocated aerodynamic testing time based on championship position:\n\n- 1st place: 70% of baseline\n- 2nd place: 75% of baseline\n- 3rd place: 80% of baseline\n- And so on...\n\nThis promotes competitive balance.\n\nParc Ferm\u00e9 Regulations\n\nArticle 34.2 - Parc Ferm\u00e9 Conditions\n\nFrom the start of qualifying until the start of the race:\n\n- Cars are in parc ferm\u00e9\n- Only specific changes are permitted\n- Setup changes are forbidden\n- Tyre pressures may be adjusted\n- Fuel may be added or removed\n\nRace Start Procedure\n\nArticle 36.9 - Starting Grid\n\nCars must be in their grid positions:\n\n- 15 minutes before start time\n- Engines may be started\n- Mechanics must leave grid 3 minutes before start\n- Any car not in position: Start from pit lane\n\nArticle 36.13 - Start Lights\n\nThe start sequence:\n\n- 5 red lights illuminate one by one\n- Random delay (typically 1-5 seconds)\n- All lights extinguish simultaneously\n- Race begins when lights go out\n\nTrack Limits\n\nArticle 27.3 - Leaving the Track\n\nA driver will be judged to have left the track if:\n\n- No part of the car remains in contact with the track\n- All four wheels are beyond the white line\n\nArticle 27.4 - Gaining an Advantage\n\nIf a driver leaves the track and gains a lasting advantage:\n\n- Must give back the position\n- Or receive a time penalty\n- Three violations: Black and white flag warning\n- Continued violations: Time penalty\n\nThis document contains key excerpts from FIA Formula 1 Technical and Sporting Regulations. For complete regulations, refer to official FIA documentation.\n\nLast Updated: 2024 Season Source: FIA Formula 1 Regulations (Simplified for AI Processing)",
+  "markdown": "# FIA Formula 1 Technical Regulations - Key Excerpts\n\n## DRS (Drag Reduction System) Rules\n\n### Article 11.2 - DRS Activation\n\nThe DRS (Drag Reduction System) may only be activated by the driver in the pre-determined DRS zones when:\n\n- The driver is within one second of the car ahead at the DRS detection point\n- The race has been running for at least two laps after the start or restart\n- No yellow flags are being displayed in the DRS zone\n- Track conditions are declared dry by Race Control\n\n### Article 11.3 - DRS Restrictions\n\nDRS must be disabled:\n\n- During Safety Car periods\n- During Virtual Safety Car periods\n- During yellow flag conditions\n- During the first two laps after race start\n- During the first two laps after a restart\n\n## Tyre Regulations\n\n### Article 24.1 - Tyre Compounds\n\nEach driver must use at least two different specifications of dry-weather tyres during the race, unless:\n\n- The race is suspended and cannot be restarted\n- The race is declared wet by Race Control\n- The driver fails to complete more than 50% of race distance\n\n### Article 24.2 - Tyre Allocation\n\nFor each race weekend, drivers receive:\n\n- 13 sets of dry-weather tyres (combination of Soft, Medium, Hard)\n- 4 sets of intermediate tyres\n- 3 sets of wet-weather tyres\n\n### Article 24.3 - Tyre Pressure\n\nMinimum starting tyre pressures are defined by the FIA for each race:\n\n- Front tyres: Typically 19.0-21.0 PSI\n- Rear tyres: Typically 18.0-20.0 PSI These values vary by circuit and are communicated in the race director's notes.\n\n## Pit Stop Regulations\n\n### Article 23.1 - Pit Lane Speed Limit\n\nThe pit lane speed limit is 80 km/h (49.7 mph) unless otherwise specified by the FIA for a particular circuit. Exceeding this limit results in:\n\n- First offense: Time penalty (typically 5 seconds)\n- Subsequent offenses: Drive-through penalty or stop-and-go penalty\n\n### Article 23.2 - Pit Stop Procedure\n\nDuring a pit stop:\n\n- The car must be stationary before any work begins\n- A maximum of 5 mechanics may work on each wheel simultaneously\n- The driver must not release the car until all wheel guns are clear\n- The car must not be released into the path of another car\n\n### Article 23.3 - Unsafe Release\n\nReleasing a car in an unsafe manner results in:\n\n- Minimum 10-second stop-and-go penalty\n- Possible further penalties if deemed dangerous\n- Team may be fined up to \u20ac25,000\n\n## Safety Car Regulations\n\n### Article 39.1 - Safety Car Deployment\n\nThe Safety Car may be deployed when:\n\n- Track conditions are unsafe for racing\n- An incident requires marshals on track\n- Debris needs to be cleared\n- Weather conditions deteriorate suddenly\n\n### Article 39.2 - Safety Car Procedure\n\nWhen the Safety Car is deployed:\n\n- All cars must reduce speed and form up behind the Safety Car\n- Overtaking is forbidden except to regain lost positions\n- Lapped cars may be instructed to unlap themselves\n- Pit lane remains open unless specifically closed\n\n### Article 39.3 - Safety Car Restart\n\nThe Safety Car will return to the pits when:\n\n- Track conditions are safe\n- All marshals are clear\n- Race Control determines racing can resume The Safety Car lights will be extinguished on the lap before it returns to the pits.\n\n## Virtual Safety Car (VSC)\n\n### Article 39.12 - VSC Activation\n\nThe Virtual Safety Car may be used for:\n\n- Incidents requiring brief track intervention\n- Situations not severe enough for full Safety Car\n- Quick debris removal\n\n### Article 39.13 - VSC Procedure\n\nDuring VSC:\n\n- Drivers must maintain a target lap time set by Race Control\n- Delta times are displayed on steering wheels\n- Overtaking is forbidden\n- Pit lane remains open\n- Cars must maintain relative positions\n\n## Flag Signals\n\n### Article 2.5 - Flag Meanings\n\n**Green Flag:** Track is clear, racing conditions normal\n\n**Yellow Flag:** Danger on or near the track\n\n- Single waved: Reduce speed, be prepared to change direction, no overtaking\n- Double waved: Reduce speed significantly, be prepared to stop, no overtaking\n\n**Red Flag:** Session suspended\n\n- All cars must return to pit lane immediately\n- No overtaking permitted\n\n**Blue Flag:** Faster car approaching to lap\n\n- Must be shown for at least 3 marshalling posts\n- Driver must allow faster car to pass within 3 blue flag displays\n- Failure to comply: Penalty (typically 5 seconds)\n\n**Black and White Flag (Diagonal):** Warning for unsportsmanlike behavior\n\n- Shown with car number\n- Next offense may result in penalty\n\n**Black Flag with Orange Circle:** Mechanical problem detected\n\n- Shown with car number\n- Driver must return to pits immediately\n\n## Penalty System\n\n### Article 38.3 - Time Penalties\n\n**5-Second Penalty:** Added to race time or served at pit stop\n\n- Minor track limits violations\n- Minor contact with another car\n- First pit lane speeding offense\n\n**10-Second Penalty:** Added to race time or served at pit stop\n\n- More serious track limits violations\n- Causing a collision\n- Gaining lasting advantage by leaving track\n\n**Drive-Through Penalty:** Must drive through pit lane at speed limit\n\n- Serious pit lane speeding\n- Ignoring blue flags\n- Unsafe release from pit stop\n\n**Stop-and-Go Penalty:** Must stop in pit box for specified time (10-30 seconds)\n\n- Very serious offenses\n- Dangerous driving\n- Multiple offenses\n\n### Article 38.4 - Grid Penalties\n\nApplied to starting position for next race:\n\n- Engine component changes beyond allocation\n- Gearbox changes before required mileage\n- Accumulated penalty points\n\n## Weight Regulations\n\n### Article 4.1 - Minimum Weight\n\nThe minimum weight of the car, without fuel but with driver, must not be less than:\n\n- 798 kg (2024 regulations) This includes:\n- Driver in racing suit\n- Seat\n- All fluids except fuel\n\n### Article 4.2 - Ballast\n\nIf the car is underweight:\n\n- Ballast may be added\n- Must be secured in a way that requires tools to remove\n- Must be placed as low as possible in the car\n\n## Fuel Regulations\n\n### Article 6.5 - Fuel Capacity\n\nMaximum fuel capacity: 110 kg at race start\n\n### Article 6.6 - Fuel Flow Rate\n\nMaximum fuel flow rate: 100 kg/hour\n\n### Article 6.7 - Fuel Samples\n\nThe FIA may take fuel samples at any time to verify compliance with regulations.\n\n## Power Unit Regulations\n\n### Article 5.1 - Power Unit Components\n\nEach driver is allocated per season:\n\n- 3 Internal Combustion Engines (ICE)\n- 3 Motor Generator Unit-Kinetic (MGU-K)\n- 3 Motor Generator Unit-Heat (MGU-H)\n- 3 Turbochargers (TC)\n- 2 Energy Stores (ES)\n- 2 Control Electronics (CE)\n- 8 Exhaust Systems\n\nExceeding allocation results in grid penalties.\n\n## Aerodynamic Testing Restrictions\n\n### Article 22.1 - Wind Tunnel Testing\n\nTeams are allocated aerodynamic testing time based on championship position:\n\n- 1st place: 70% of baseline\n- 2nd place: 75% of baseline\n- 3rd place: 80% of baseline\n- And so on...\n\nThis promotes competitive balance.\n\n## Parc Ferm\u00e9 Regulations\n\n### Article 34.2 - Parc Ferm\u00e9 Conditions\n\nFrom the start of qualifying until the start of the race:\n\n- Cars are in parc ferm\u00e9\n- Only specific changes are permitted\n- Setup changes are forbidden\n- Tyre pressures may be adjusted\n- Fuel may be added or removed\n\n## Race Start Procedure\n\n### Article 36.9 - Starting Grid\n\nCars must be in their grid positions:\n\n- 15 minutes before start time\n- Engines may be started\n- Mechanics must leave grid 3 minutes before start\n- Any car not in position: Start from pit lane\n\n### Article 36.13 - Start Lights\n\nThe start sequence:\n\n- 5 red lights illuminate one by one\n- Random delay (typically 1-5 seconds)\n- All lights extinguish simultaneously\n- Race begins when lights go out\n\n## Track Limits\n\n### Article 27.3 - Leaving the Track\n\nA driver will be judged to have left the track if:\n\n- No part of the car remains in contact with the track\n- All four wheels are beyond the white line\n\n### Article 27.4 - Gaining an Advantage\n\nIf a driver leaves the track and gains a lasting advantage:\n\n- Must give back the position\n- Or receive a time penalty\n- Three violations: Black and white flag warning\n- Continued violations: Time penalty\n\n*This document contains key excerpts from FIA Formula 1 Technical and Sporting Regulations. For complete regulations, refer to official FIA documentation.*\n\n**Last Updated:** 2024 Season **Source:** FIA Formula 1 Regulations (Simplified for AI Processing)",
+  "metadata": {
+    "numPages": 0,
+    "title": "FIA Formula 1 Technical Regulations - Key Excerpts"
+  },
+  "sections": [
+    {
+      "title": "DRS (Drag Reduction System) Rules",
+      "content": "### Article 11.2 - DRS Activation\n\nThe DRS (Drag Reduction System) may only be activated by the driver in the pre-determined DRS zones when:\n\n- The driver is within one second of the car ahead at the DRS detection point\n- The race has been running for at least two laps after the start or restart\n- No yellow flags are being displayed in the DRS zone\n- Track conditions are declared dry by Race Control\n\n### Article 11.3 - DRS Restrictions\n\nDRS must be disabled:\n\n- During Safety Car periods\n- During Virtual Safety Car periods\n- During yellow flag conditions\n- During the first two laps after race start\n- During the first two laps after a restart",
+      "subsections": [
+        {
+          "title": "Article 11.2 - DRS Activation",
+          "content": "The DRS (Drag Reduction System) may only be activated by the driver in the pre-determined DRS zones when:\n\n- The driver is within one second of the car ahead at the DRS detection point\n- The race has been running for at least two laps after the start or restart\n- No yellow flags are being displayed in the DRS zone\n- Track conditions are declared dry by Race Control"
+        },
+        {
+          "title": "Article 11.3 - DRS Restrictions",
+          "content": "DRS must be disabled:\n\n- During Safety Car periods\n- During Virtual Safety Car periods\n- During yellow flag conditions\n- During the first two laps after race start\n- During the first two laps after a restart"
+        }
+      ]
+    },
+    {
+      "title": "Tyre Regulations",
+      "content": "### Article 24.1 - Tyre Compounds\n\nEach driver must use at least two different specifications of dry-weather tyres during the race, unless:\n\n- The race is suspended and cannot be restarted\n- The race is declared wet by Race Control\n- The driver fails to complete more than 50% of race distance\n\n### Article 24.2 - Tyre Allocation\n\nFor each race weekend, drivers receive:\n\n- 13 sets of dry-weather tyres (combination of Soft, Medium, Hard)\n- 4 sets of intermediate tyres\n- 3 sets of wet-weather tyres\n\n### Article 24.3 - Tyre Pressure\n\nMinimum starting tyre pressures are defined by the FIA for each race:\n\n- Front tyres: Typically 19.0-21.0 PSI\n- Rear tyres: Typically 18.0-20.0 PSI These values vary by circuit and are communicated in the race director's notes.",
+      "subsections": [
+        {
+          "title": "Article 24.1 - Tyre Compounds",
+          "content": "Each driver must use at least two different specifications of dry-weather tyres during the race, unless:\n\n- The race is suspended and cannot be restarted\n- The race is declared wet by Race Control\n- The driver fails to complete more than 50% of race distance"
+        },
+        {
+          "title": "Article 24.2 - Tyre Allocation",
+          "content": "For each race weekend, drivers receive:\n\n- 13 sets of dry-weather tyres (combination of Soft, Medium, Hard)\n- 4 sets of intermediate tyres\n- 3 sets of wet-weather tyres"
+        },
+        {
+          "title": "Article 24.3 - Tyre Pressure",
+          "content": "Minimum starting tyre pressures are defined by the FIA for each race:\n\n- Front tyres: Typically 19.0-21.0 PSI\n- Rear tyres: Typically 18.0-20.0 PSI These values vary by circuit and are communicated in the race director's notes."
+        }
+      ]
+    },
+    {
+      "title": "Pit Stop Regulations",
+      "content": "### Article 23.1 - Pit Lane Speed Limit\n\nThe pit lane speed limit is 80 km/h (49.7 mph) unless otherwise specified by the FIA for a particular circuit. Exceeding this limit results in:\n\n- First offense: Time penalty (typically 5 seconds)\n- Subsequent offenses: Drive-through penalty or stop-and-go penalty\n\n### Article 23.2 - Pit Stop Procedure\n\nDuring a pit stop:\n\n- The car must be stationary before any work begins\n- A maximum of 5 mechanics may work on each wheel simultaneously\n- The driver must not release the car until all wheel guns are clear\n- The car must not be released into the path of another car\n\n### Article 23.3 - Unsafe Release\n\nReleasing a car in an unsafe manner results in:\n\n- Minimum 10-second stop-and-go penalty\n- Possible further penalties if deemed dangerous\n- Team may be fined up to \u20ac25,000",
+      "subsections": [
+        {
+          "title": "Article 23.1 - Pit Lane Speed Limit",
+          "content": "The pit lane speed limit is 80 km/h (49.7 mph) unless otherwise specified by the FIA for a particular circuit. Exceeding this limit results in:\n\n- First offense: Time penalty (typically 5 seconds)\n- Subsequent offenses: Drive-through penalty or stop-and-go penalty"
+        },
+        {
+          "title": "Article 23.2 - Pit Stop Procedure",
+          "content": "During a pit stop:\n\n- The car must be stationary before any work begins\n- A maximum of 5 mechanics may work on each wheel simultaneously\n- The driver must not release the car until all wheel guns are clear\n- The car must not be released into the path of another car"
+        },
+        {
+          "title": "Article 23.3 - Unsafe Release",
+          "content": "Releasing a car in an unsafe manner results in:\n\n- Minimum 10-second stop-and-go penalty\n- Possible further penalties if deemed dangerous\n- Team may be fined up to \u20ac25,000"
+        }
+      ]
+    },
+    {
+      "title": "Safety Car Regulations",
+      "content": "### Article 39.1 - Safety Car Deployment\n\nThe Safety Car may be deployed when:\n\n- Track conditions are unsafe for racing\n- An incident requires marshals on track\n- Debris needs to be cleared\n- Weather conditions deteriorate suddenly\n\n### Article 39.2 - Safety Car Procedure\n\nWhen the Safety Car is deployed:\n\n- All cars must reduce speed and form up behind the Safety Car\n- Overtaking is forbidden except to regain lost positions\n- Lapped cars may be instructed to unlap themselves\n- Pit lane remains open unless specifically closed\n\n### Article 39.3 - Safety Car Restart\n\nThe Safety Car will return to the pits when:\n\n- Track conditions are safe\n- All marshals are clear\n- Race Control determines racing can resume The Safety Car lights will be extinguished on the lap before it returns to the pits.",
+      "subsections": [
+        {
+          "title": "Article 39.1 - Safety Car Deployment",
+          "content": "The Safety Car may be deployed when:\n\n- Track conditions are unsafe for racing\n- An incident requires marshals on track\n- Debris needs to be cleared\n- Weather conditions deteriorate suddenly"
+        },
+        {
+          "title": "Article 39.2 - Safety Car Procedure",
+          "content": "When the Safety Car is deployed:\n\n- All cars must reduce speed and form up behind the Safety Car\n- Overtaking is forbidden except to regain lost positions\n- Lapped cars may be instructed to unlap themselves\n- Pit lane remains open unless specifically closed"
+        },
+        {
+          "title": "Article 39.3 - Safety Car Restart",
+          "content": "The Safety Car will return to the pits when:\n\n- Track conditions are safe\n- All marshals are clear\n- Race Control determines racing can resume The Safety Car lights will be extinguished on the lap before it returns to the pits."
+        }
+      ]
+    },
+    {
+      "title": "Virtual Safety Car (VSC)",
+      "content": "### Article 39.12 - VSC Activation\n\nThe Virtual Safety Car may be used for:\n\n- Incidents requiring brief track intervention\n- Situations not severe enough for full Safety Car\n- Quick debris removal\n\n### Article 39.13 - VSC Procedure\n\nDuring VSC:\n\n- Drivers must maintain a target lap time set by Race Control\n- Delta times are displayed on steering wheels\n- Overtaking is forbidden\n- Pit lane remains open\n- Cars must maintain relative positions",
+      "subsections": [
+        {
+          "title": "Article 39.12 - VSC Activation",
+          "content": "The Virtual Safety Car may be used for:\n\n- Incidents requiring brief track intervention\n- Situations not severe enough for full Safety Car\n- Quick debris removal"
+        },
+        {
+          "title": "Article 39.13 - VSC Procedure",
+          "content": "During VSC:\n\n- Drivers must maintain a target lap time set by Race Control\n- Delta times are displayed on steering wheels\n- Overtaking is forbidden\n- Pit lane remains open\n- Cars must maintain relative positions"
+        }
+      ]
+    },
+    {
+      "title": "Flag Signals",
+      "content": "### Article 2.5 - Flag Meanings\n\n**Green Flag:** Track is clear, racing conditions normal\n\n**Yellow Flag:** Danger on or near the track\n\n- Single waved: Reduce speed, be prepared to change direction, no overtaking\n- Double waved: Reduce speed significantly, be prepared to stop, no overtaking\n\n**Red Flag:** Session suspended\n\n- All cars must return to pit lane immediately\n- No overtaking permitted\n\n**Blue Flag:** Faster car approaching to lap\n\n- Must be shown for at least 3 marshalling posts\n- Driver must allow faster car to pass within 3 blue flag displays\n- Failure to comply: Penalty (typically 5 seconds)\n\n**Black and White Flag (Diagonal):** Warning for unsportsmanlike behavior\n\n- Shown with car number\n- Next offense may result in penalty\n\n**Black Flag with Orange Circle:** Mechanical problem detected\n\n- Shown with car number\n- Driver must return to pits immediately",
+      "subsections": [
+        {
+          "title": "Article 2.5 - Flag Meanings",
+          "content": "**Green Flag:** Track is clear, racing conditions normal\n\n**Yellow Flag:** Danger on or near the track\n\n- Single waved: Reduce speed, be prepared to change direction, no overtaking\n- Double waved: Reduce speed significantly, be prepared to stop, no overtaking\n\n**Red Flag:** Session suspended\n\n- All cars must return to pit lane immediately\n- No overtaking permitted\n\n**Blue Flag:** Faster car approaching to lap\n\n- Must be shown for at least 3 marshalling posts\n- Driver must allow faster car to pass within 3 blue flag displays\n- Failure to comply: Penalty (typically 5 seconds)\n\n**Black and White Flag (Diagonal):** Warning for unsportsmanlike behavior\n\n- Shown with car number\n- Next offense may result in penalty\n\n**Black Flag with Orange Circle:** Mechanical problem detected\n\n- Shown with car number\n- Driver must return to pits immediately"
+        }
+      ]
+    },
+    {
+      "title": "Penalty System",
+      "content": "### Article 38.3 - Time Penalties\n\n**5-Second Penalty:** Added to race time or served at pit stop\n\n- Minor track limits violations\n- Minor contact with another car\n- First pit lane speeding offense\n\n**10-Second Penalty:** Added to race time or served at pit stop\n\n- More serious track limits violations\n- Causing a collision\n- Gaining lasting advantage by leaving track\n\n**Drive-Through Penalty:** Must drive through pit lane at speed limit\n\n- Serious pit lane speeding\n- Ignoring blue flags\n- Unsafe release from pit stop\n\n**Stop-and-Go Penalty:** Must stop in pit box for specified time (10-30 seconds)\n\n- Very serious offenses\n- Dangerous driving\n- Multiple offenses\n\n### Article 38.4 - Grid Penalties\n\nApplied to starting position for next race:\n\n- Engine component changes beyond allocation\n- Gearbox changes before required mileage\n- Accumulated penalty points",
+      "subsections": [
+        {
+          "title": "Article 38.3 - Time Penalties",
+          "content": "**5-Second Penalty:** Added to race time or served at pit stop\n\n- Minor track limits violations\n- Minor contact with another car\n- First pit lane speeding offense\n\n**10-Second Penalty:** Added to race time or served at pit stop\n\n- More serious track limits violations\n- Causing a collision\n- Gaining lasting advantage by leaving track\n\n**Drive-Through Penalty:** Must drive through pit lane at speed limit\n\n- Serious pit lane speeding\n- Ignoring blue flags\n- Unsafe release from pit stop\n\n**Stop-and-Go Penalty:** Must stop in pit box for specified time (10-30 seconds)\n\n- Very serious offenses\n- Dangerous driving\n- Multiple offenses"
+        },
+        {
+          "title": "Article 38.4 - Grid Penalties",
+          "content": "Applied to starting position for next race:\n\n- Engine component changes beyond allocation\n- Gearbox changes before required mileage\n- Accumulated penalty points"
+        }
+      ]
+    },
+    {
+      "title": "Weight Regulations",
+      "content": "### Article 4.1 - Minimum Weight\n\nThe minimum weight of the car, without fuel but with driver, must not be less than:\n\n- 798 kg (2024 regulations) This includes:\n- Driver in racing suit\n- Seat\n- All fluids except fuel\n\n### Article 4.2 - Ballast\n\nIf the car is underweight:\n\n- Ballast may be added\n- Must be secured in a way that requires tools to remove\n- Must be placed as low as possible in the car",
+      "subsections": [
+        {
+          "title": "Article 4.1 - Minimum Weight",
+          "content": "The minimum weight of the car, without fuel but with driver, must not be less than:\n\n- 798 kg (2024 regulations) This includes:\n- Driver in racing suit\n- Seat\n- All fluids except fuel"
+        },
+        {
+          "title": "Article 4.2 - Ballast",
+          "content": "If the car is underweight:\n\n- Ballast may be added\n- Must be secured in a way that requires tools to remove\n- Must be placed as low as possible in the car"
+        }
+      ]
+    },
+    {
+      "title": "Fuel Regulations",
+      "content": "### Article 6.5 - Fuel Capacity\n\nMaximum fuel capacity: 110 kg at race start\n\n### Article 6.6 - Fuel Flow Rate\n\nMaximum fuel flow rate: 100 kg/hour\n\n### Article 6.7 - Fuel Samples\n\nThe FIA may take fuel samples at any time to verify compliance with regulations.",
+      "subsections": [
+        {
+          "title": "Article 6.5 - Fuel Capacity",
+          "content": "Maximum fuel capacity: 110 kg at race start"
+        },
+        {
+          "title": "Article 6.6 - Fuel Flow Rate",
+          "content": "Maximum fuel flow rate: 100 kg/hour"
+        },
+        {
+          "title": "Article 6.7 - Fuel Samples",
+          "content": "The FIA may take fuel samples at any time to verify compliance with regulations."
+        }
+      ]
+    },
+    {
+      "title": "Power Unit Regulations",
+      "content": "### Article 5.1 - Power Unit Components\n\nEach driver is allocated per season:\n\n- 3 Internal Combustion Engines (ICE)\n- 3 Motor Generator Unit-Kinetic (MGU-K)\n- 3 Motor Generator Unit-Heat (MGU-H)\n- 3 Turbochargers (TC)\n- 2 Energy Stores (ES)\n- 2 Control Electronics (CE)\n- 8 Exhaust Systems\n\nExceeding allocation results in grid penalties.",
+      "subsections": [
+        {
+          "title": "Article 5.1 - Power Unit Components",
+          "content": "Each driver is allocated per season:\n\n- 3 Internal Combustion Engines (ICE)\n- 3 Motor Generator Unit-Kinetic (MGU-K)\n- 3 Motor Generator Unit-Heat (MGU-H)\n- 3 Turbochargers (TC)\n- 2 Energy Stores (ES)\n- 2 Control Electronics (CE)\n- 8 Exhaust Systems\n\nExceeding allocation results in grid penalties."
+        }
+      ]
+    },
+    {
+      "title": "Aerodynamic Testing Restrictions",
+      "content": "### Article 22.1 - Wind Tunnel Testing\n\nTeams are allocated aerodynamic testing time based on championship position:\n\n- 1st place: 70% of baseline\n- 2nd place: 75% of baseline\n- 3rd place: 80% of baseline\n- And so on...\n\nThis promotes competitive balance.",
+      "subsections": [
+        {
+          "title": "Article 22.1 - Wind Tunnel Testing",
+          "content": "Teams are allocated aerodynamic testing time based on championship position:\n\n- 1st place: 70% of baseline\n- 2nd place: 75% of baseline\n- 3rd place: 80% of baseline\n- And so on...\n\nThis promotes competitive balance."
+        }
+      ]
+    },
+    {
+      "title": "Parc Ferm\u00e9 Regulations",
+      "content": "### Article 34.2 - Parc Ferm\u00e9 Conditions\n\nFrom the start of qualifying until the start of the race:\n\n- Cars are in parc ferm\u00e9\n- Only specific changes are permitted\n- Setup changes are forbidden\n- Tyre pressures may be adjusted\n- Fuel may be added or removed",
+      "subsections": [
+        {
+          "title": "Article 34.2 - Parc Ferm\u00e9 Conditions",
+          "content": "From the start of qualifying until the start of the race:\n\n- Cars are in parc ferm\u00e9\n- Only specific changes are permitted\n- Setup changes are forbidden\n- Tyre pressures may be adjusted\n- Fuel may be added or removed"
+        }
+      ]
+    },
+    {
+      "title": "Race Start Procedure",
+      "content": "### Article 36.9 - Starting Grid\n\nCars must be in their grid positions:\n\n- 15 minutes before start time\n- Engines may be started\n- Mechanics must leave grid 3 minutes before start\n- Any car not in position: Start from pit lane\n\n### Article 36.13 - Start Lights\n\nThe start sequence:\n\n- 5 red lights illuminate one by one\n- Random delay (typically 1-5 seconds)\n- All lights extinguish simultaneously\n- Race begins when lights go out",
+      "subsections": [
+        {
+          "title": "Article 36.9 - Starting Grid",
+          "content": "Cars must be in their grid positions:\n\n- 15 minutes before start time\n- Engines may be started\n- Mechanics must leave grid 3 minutes before start\n- Any car not in position: Start from pit lane"
+        },
+        {
+          "title": "Article 36.13 - Start Lights",
+          "content": "The start sequence:\n\n- 5 red lights illuminate one by one\n- Random delay (typically 1-5 seconds)\n- All lights extinguish simultaneously\n- Race begins when lights go out"
+        }
+      ]
+    },
+    {
+      "title": "Track Limits",
+      "content": "### Article 27.3 - Leaving the Track\n\nA driver will be judged to have left the track if:\n\n- No part of the car remains in contact with the track\n- All four wheels are beyond the white line\n\n### Article 27.4 - Gaining an Advantage\n\nIf a driver leaves the track and gains a lasting advantage:\n\n- Must give back the position\n- Or receive a time penalty\n- Three violations: Black and white flag warning\n- Continued violations: Time penalty\n\n*This document contains key excerpts from FIA Formula 1 Technical and Sporting Regulations. For complete regulations, refer to official FIA documentation.*\n\n**Last Updated:** 2024 Season **Source:** FIA Formula 1 Regulations (Simplified for AI Processing)",
+      "subsections": [
+        {
+          "title": "Article 27.3 - Leaving the Track",
+          "content": "A driver will be judged to have left the track if:\n\n- No part of the car remains in contact with the track\n- All four wheels are beyond the white line"
+        },
+        {
+          "title": "Article 27.4 - Gaining an Advantage",
+          "content": "If a driver leaves the track and gains a lasting advantage:\n\n- Must give back the position\n- Or receive a time penalty\n- Three violations: Black and white flag warning\n- Continued violations: Time penalty\n\n*This document contains key excerpts from FIA Formula 1 Technical and Sporting Regulations. For complete regulations, refer to official FIA documentation.*\n\n**Last Updated:** 2024 Season **Source:** FIA Formula 1 Regulations (Simplified for AI Processing)"
+        }
+      ]
+    }
+  ]
+}
