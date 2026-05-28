@@ -110,6 +110,12 @@
                     <div id="leaderboard" class="leaderboard"></div>
                 </div>
 
+                <!-- Tyre Strategy Panel -->
+                <div class="section" id="tyreStrategySection" style="display: none;">
+                    <h2>🏁 Tyre Strategy</h2>
+                    <div id="tyreStrategyPanel" class="tyre-strategy-panel"></div>
+                </div>
+
                 <!-- Race Control -->
                 <div class="section" id="raceControlSection" style="display: none;">
                     <h2>Race Control</h2>
@@ -152,14 +158,42 @@
                     <button class="btn btn-ghost" onclick="toggleGhost(!ghostEnabled)" style="width: 100%;">
                         👻 <span id="ghostToggleText">Enable Ghost</span>
                     </button>
-                    <div id="ghostPanel" style="margin-top: 10px; display: flex; justify-content: space-between; gap: 10px;">
-                        <div style="flex: 1;">
-                            <div style="font-size: 12px; opacity: 0.8;">Lap Delta</div>
-                            <div id="lapDelta" class="delta-value" style="font-weight: 700;">+0.000</div>
+                    <div id="ghostPanel" style="margin-top: 10px; display: none;">
+                        <div style="display: flex; justify-content: space-between; gap: 10px; margin-bottom: 10px;">
+                            <div style="flex: 1;">
+                                <div style="font-size: 12px; opacity: 0.8;">Lap Delta</div>
+                                <div id="lapDelta" class="delta-value" style="font-weight: 700; font-size: 18px;">+0.000</div>
+                            </div>
+                            <div style="flex: 1;">
+                                <div style="font-size: 12px; opacity: 0.8;">Speed Δ</div>
+                                <div id="speedDelta" style="font-weight: 700; font-size: 16px;">0 km/h</div>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <div style="font-size: 12px; opacity: 0.8;">Reference</div>
-                            <div id="ghostRef" style="font-weight: 700;">Fastest Lap</div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">Sector Deltas</div>
+                            <div style="display: flex; gap: 5px;">
+                                <div style="flex: 1; text-align: center; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                                    <div style="font-size: 10px; opacity: 0.6;">S1</div>
+                                    <div id="sector1Delta" class="delta-value" style="font-size: 14px; font-weight: 600;">-</div>
+                                </div>
+                                <div style="flex: 1; text-align: center; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                                    <div style="font-size: 10px; opacity: 0.6;">S2</div>
+                                    <div id="sector2Delta" class="delta-value" style="font-size: 14px; font-weight: 600;">-</div>
+                                </div>
+                                <div style="flex: 1; text-align: center; padding: 5px; background: rgba(255,255,255,0.05); border-radius: 4px;">
+                                    <div style="font-size: 10px; opacity: 0.6;">S3</div>
+                                    <div id="sector3Delta" class="delta-value" style="font-size: 14px; font-weight: 600;">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-size: 11px; opacity: 0.7; text-align: center;">
+                            <span style="color: #4ade80;">●</span> Gaining
+                            <span style="color: #fbbf24; margin-left: 8px;">●</span> Fastest
+                            <span style="color: #ef4444; margin-left: 8px;">●</span> Losing
+                        </div>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1);">
+                            <div style="font-size: 11px; opacity: 0.6;">Reference</div>
+                            <div id="ghostRef" style="font-weight: 600; font-size: 13px;">Fastest Lap</div>
                         </div>
                     </div>
                 </div>
@@ -168,6 +202,20 @@
                 <div class="section" id="strategyInsightsSection" style="display: none;">
                     <h2>📊 Strategy Insights</h2>
                     <div id="strategyInsights" class="strategy-insights-box"></div>
+                </div>
+                
+                <!-- Regulations Context (Docling) -->
+                <div class="section" id="regulationsSection" style="display: none;">
+                    <h2>📚 Active Regulations</h2>
+                    <div id="regulationsDisplay" class="regulations-box">
+                        <div class="regulation-item">
+                            <div class="regulation-title">No active regulation context</div>
+                            <div class="regulation-content">Regulations will appear here during relevant race events</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; opacity: 0.6; text-align: center;">
+                        <span id="regulationsCount">0 sections loaded</span>
+                    </div>
                 </div>
             </aside>
 
@@ -181,6 +229,34 @@
                 </div>
 
                 <canvas id="trackCanvas" style="display: none;"></canvas>
+
+                <!-- Telemetry Comparison Overlay -->
+                <div id="telemetryComparison" class="telemetry-comparison" style="display: none;">
+                    <div class="telemetry-header">
+                        <h3>📊 Driver Comparison</h3>
+                        <button class="close-comparison-btn" onclick="closeTelemetryComparison()">×</button>
+                    </div>
+                    <div class="telemetry-drivers" id="comparisonDrivers"></div>
+                    <div class="telemetry-charts-container">
+                        <div class="chart-section">
+                            <h4>Speed (km/h)</h4>
+                            <canvas id="speedChart" width="350" height="80"></canvas>
+                        </div>
+                        <div class="chart-section">
+                            <h4>Throttle (%)</h4>
+                            <canvas id="throttleChart" width="350" height="80"></canvas>
+                        </div>
+                        <div class="chart-section">
+                            <h4>Brake</h4>
+                            <canvas id="brakeChart" width="350" height="80"></canvas>
+                        </div>
+                        <div class="chart-section">
+                            <h4>Gear</h4>
+                            <canvas id="gearChart" width="350" height="60"></canvas>
+                        </div>
+                    </div>
+                    <div class="telemetry-stats" id="telemetryStats"></div>
+                </div>
 
                 <!-- Session Info Overlay -->
                 <div id="sessionInfo" class="session-info" style="display: none;">
