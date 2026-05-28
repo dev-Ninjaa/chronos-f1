@@ -32,7 +32,40 @@ Formula 1 generates **1.5 million data points per second** during a race. Teams,
 
 ## 🚀 Key Features
 
-### 🤖 AI-Powered Intelligence
+
+#### **Fan Mode & Engineer Mode** 🎙️
+- **Dual commentary styles** using the same telemetry data
+- **Fan Mode**: Simple, exciting broadcast commentary
+  - Example: *"Hamilton closes into DRS range."*
+- **Engineer Mode**: Technical, data-driven analysis
+  - Example: *"Hamilton reduced gap by 0.28 seconds through improved exit speed."*
+- **Real-time mode switching** - toggle between styles instantly
+- **Single data pipeline** - no duplicated analysis
+
+#### **AI Race Debrief** 📊
+- **Automatic generation** at replay completion
+- **Comprehensive analysis** including:
+  - Best strategy identification
+  - Critical race events timeline
+  - Most aggressive driver analysis
+  - Tyre efficiency comparison
+  - Safety car impact assessment
+  - Predicted vs actual outcomes
+  - AI strategic recommendations
+  - Professional race summary
+- **Export to PDF** for sharing and archival
+- **Full-screen modal** or side panel display
+
+#### **Ghost Comparison System** 👻
+- **Compare against fastest lap** reference
+- **Live delta timing** with color-coded performance:
+  - 🟢 **Green**: Gaining time
+  - 🔴 **Red**: Losing time
+  - 🟡 **Gold**: Fastest sector (within 0.05s)
+- **Sector-by-sector analysis** (3 sectors)
+- **Smooth interpolation** at all replay speeds (0.25x - 8x)
+- **Ghost driver visualization** on track
+- **Real-time speed differential**
 
 #### **IBM Granite AI Commentary**
 - **Real-time race commentary** generated using IBM Granite models
@@ -98,24 +131,18 @@ Formula 1 generates **1.5 million data points per second** during a race. Teams,
 
 | Technology | Purpose | Status | Implementation |
 |------------|---------|--------|----------------|
-| **IBM Granite** | AI commentary generation | 🚧 **Coming Soon** | `ai/graniteClient.py`, `ai/aiCommentary.py` |
+| **IBM Granite** | AI commentary generation | ✅ **Working** | `ai/graniteClient.py`, `ai/aiCommentary.py` |
 | **Docling** | Document processing & regulations | ✅ **Working** | `documents/documentProcessor.py` + built-in markdown parser |
 | **Langflow** | Workflow orchestration | ✅ **Working** | `workflows/langflowIntegration.py` with built-in implementations |
 
 **Note on AI Models:**  
-For now, we're using **Google Gemini API** for AI commentary generation as it provides excellent performance and a generous free tier. Before publishing the final version, we will migrate to **IBM Granite** models to fully align with IBM's AI ecosystem. The architecture is designed to be model-agnostic, making this transition seamless.
+We are using **IBM Granite** via **local Ollama** for AI commentary generation. The architecture is designed to be model-agnostic, and models can easily be swapped or changed from the `.env` file.
 
-**Why Gemini for Development?**
-- ✅ Free tier with 15 requests/minute
-- ✅ Fast response times (<3s)
-- ✅ Excellent natural language generation
-- ✅ Easy API access for testing
-
-**Migration to IBM Granite:**
-- 🔄 Planned before final submission
-- 🔄 Architecture already supports model swapping
-- 🔄 Will use IBM Granite 3.0 Dense 8B model
-- 🔄 No code changes needed (just API endpoint update)
+**Why Local Ollama?**
+- ✅ Free, completely offline, and private
+- ✅ Fast response times locally
+- ✅ Easy model switching via `.env`
+- ✅ Full alignment with IBM's AI ecosystem using Granite models
 
 ### Supporting Technologies
 
@@ -135,7 +162,7 @@ For now, we're using **Google Gemini API** for AI commentary generation as it pr
 - **uv** package manager (faster than pip) - [Install UV](https://docs.astral.sh/uv/getting-started/installation/)
 - **Git** for cloning
 - **Modern browser** (Chrome, Edge, Firefox)
-- **Google Gemini API key** (free tier available)
+- **Ollama** installed locally (for AI commentary)
 
 ### Quick Start (5 Minutes)
 
@@ -168,10 +195,9 @@ uv pip install -r requirements.txt
 
 # 6. Configure AI services
 cp .env.example .env
-# Edit .env and add your API key:
-# GEMINI_API_KEY=your_key_here
-# GEMINI_MODEL=gemini-2.5-flash
-
+# By default, it connects to local Ollama using granite3.3:2b.
+# Edit .env to change models if needed:
+# OLLAMA_MODEL=granite3.3:1b
 # 7. Verify installation (recommended)
 python check_dependencies.py
 
@@ -208,10 +234,9 @@ pip install -r requirements.txt
 
 # 5. Configure AI services
 cp .env.example .env
-# Edit .env and add your API key:
-# GEMINI_API_KEY=your_key_here
-# GEMINI_MODEL=gemini-2.5-flash
-
+# By default, it connects to local Ollama using granite3.3:2b.
+# Edit .env to change models if needed:
+# OLLAMA_MODEL=granite3.3:1b
 # 6. Verify installation (recommended)
 python check_dependencies.py
 
@@ -224,20 +249,6 @@ python app.py
 # 9. Open browser
 # Navigate to: http://localhost:5000
 ```
-
-### 🔑 Getting API Keys
-
-**Google Gemini API (FREE - Temporary for Development):**
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
-2. Create a new API key
-3. Add to `.env` file as `GEMINI_API_KEY`
-
-**Free tier includes:**
-- 15 requests per minute
-- 1 million tokens per day
-- Perfect for development and testing!
-
-**Note:** We will migrate to IBM Granite API before final publication. The current implementation uses Gemini for rapid prototyping and testing.
 
 ---
 
@@ -290,7 +301,7 @@ chronos-f1/
 │
 ├── 🤖 AI Intelligence Layer
 │   ├── ai/
-│   │   ├── graniteClient.py          # IBM Granite AI client (Gemini)
+│   │   ├── graniteClient.py          # IBM Granite AI client via Ollama
 │   │   ├── aiCommentary.py           # Commentary generation engine
 │   │   └── __init__.py
 │   │
