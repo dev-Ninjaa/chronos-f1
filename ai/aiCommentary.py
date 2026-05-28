@@ -23,8 +23,24 @@ class AICommentary:
         """Load F1 regulations knowledge from Docling processor."""
         self.regulationsKnowledge = regulations
         sections_count = len(regulations.get("sections", []))
-        print(f"Loaded regulations knowledge: {sections_count} sections")
-        print(f"   Available rules: {list(regulations.keys())}")
+        
+        # Count available rules
+        rule_types = [k for k in regulations.keys() if k.endswith('_rules')]
+        
+        print(f"📚 ===== DOCLING REGULATIONS LOADED =====")
+        print(f"   Total sections: {sections_count}")
+        print(f"   Rule categories: {len(rule_types)}")
+        print(f"   Available rules: {', '.join(rule_types)}")
+        
+        # Log sample content from each rule type
+        for rule_type in rule_types:
+            content = regulations.get(rule_type, '')
+            preview = content[:80] + '...' if len(content) > 80 else content
+            print(f"   - {rule_type}: {preview}")
+        
+        print(f"📚 ========================================")
+        
+        return sections_count
 
     def generateCommentary(self, telemetryData: Dict, eventType: str = "general") -> str:
         prompt = self._buildPrompt(telemetryData, eventType)
@@ -51,6 +67,7 @@ class AICommentary:
         drivers = frame.get("drivers", {})
         weather = telemetryData.get("weather") or {}
         currentTime = telemetryData.get("t", frame.get("t", 0))
+        trackStatus = telemetryData.get("trackStatus", "1")
 
         sortedDrivers = sorted(
             drivers.items(),
@@ -65,12 +82,38 @@ class AICommentary:
             tyreLife = leaderData.get("tyreLife", 0)
             tyreInfo = f"\n- Leader tyres: {tyreCompound}, {tyreLife} laps old"
 
+        # Dynamic regulation context injection based on race situation
         regulationsContext = ""
-        if self.regulationsKnowledge and eventType in ["drs_active", "pit_stop"]:
+        injectedRules = []
+        
+        if self.regulationsKnowledge:
+            # DRS events
             if eventType == "drs_active" and "drs_rules" in self.regulationsKnowledge:
-                regulationsContext = f"\n- DRS Rule: {self.regulationsKnowledge['drs_rules']}"
-            elif eventType == "pit_stop" and "pit_rules" in self.regulationsKnowledge:
-                regulationsContext = f"\n- Pit Rule: {self.regulationsKnowledge['pit_rules']}"
+                regulationsContext += f"\n- DRS Rule: {self.regulationsKnowledge['drs_rules'][:150]}"
+                injectedRules.append("DRS")
+            
+            # Pit stop events
+            if eventType == "pit_stop" and "pit_rules" in self.regulationsKnowledge:
+                regulationsContext += f"\n- Pit Rule: {self.regulationsKnowledge['pit_rules'][:150]}"
+                injectedRules.append("Pit")
+            
+            # Safety Car / VSC
+            if trackStatus in ["4", "6", "7"] and "safety_car_rules" in self.regulationsKnowledge:
+                regulationsContext += f"\n- Safety Car Rule: {self.regulationsKnowledge['safety_car_rules'][:150]}"
+                injectedRules.append("Safety Car")
+            
+            # Yellow flags
+            if trackStatus == "2" and "flag_rules" in self.regulationsKnowledge:
+                regulationsContext += f"\n- Yellow Flag Rule: No overtaking, reduce speed"
+                injectedRules.append("Yellow Flag")
+            
+            # Tyre strategy context (always include for strategic commentary)
+            if "tyre_rules" in self.regulationsKnowledge and eventType in ["general", "interval_summary"]:
+                regulationsContext += f"\n- Tyre Rule: {self.regulationsKnowledge['tyre_rules'][:100]}"
+                injectedRules.append("Tyre")
+        
+        if injectedRules:
+            print(f"📚 Regulations injected: {', '.join(injectedRules)}")
 
         return f"""Write F1 race commentary in 1 to 3 complete English sentences.
 
@@ -128,28 +171,65 @@ Write the commentary now:"""
         previousFrameData = previousFrame.get("frame", previousFrame)
         currentDrivers = currentFrameData.get("drivers", {})
         previousDrivers = previousFrameData.get("drivers", {})
+        
+        # Track status changes
+        currentTrackStatus = currentFrame.get("trackStatus", "1")
+        previousTrackStatus = previousFrame.get("trackStatus", "1")
+        
+        if currentTrackStatus != previousTrackStatus:
+            print(f"🚦 Track status changed: {previousTrackStatus} → {currentTrackStatus}")
+            if currentTrackStatus in ["4", "6", "7"]:
+                events.append(f"safety_car:deployed")
+                print(f"🚨 Safety Car event detected: status {currentTrackStatus}")
+            elif currentTrackStatus == "2":
+                events.append(f"yellow_flag:shown")
+                print(f"🟡 Yellow flag event detected")
+        
+        # Check race control messages for flag events
+        raceControlMessages = currentFrame.get("raceControlMessages", [])
+        if raceControlMessages and len(raceControlMessages) > 0:
+            latestMessage = raceControlMessages[-1]
+            messageText = latestMessage.get("message", "").upper()
+            
+            if "YELLOW" in messageText and "yellow_flag" not in [e.split(":")[0] for e in events]:
+                events.append(f"yellow_flag:race_control")
+                print(f"🟡 Yellow flag detected from race control: {messageText}")
+            elif "SAFETY CAR" in messageText and "safety_car" not in [e.split(":")[0] for e in events]:
+                events.append(f"safety_car:race_control")
+                print(f"🚨 Safety car detected from race control: {messageText}")
 
         if not currentDrivers or not previousDrivers:
-            return []
+            return events
 
         for driver, data in currentDrivers.items():
             if driver not in previousDrivers or not data or not previousDrivers[driver]:
                 continue
 
             prevData = previousDrivers[driver]
+            
+            # Pit stop detection
             if data.get("inPit") and not prevData.get("inPit"):
                 events.append(f"pit_stop:{driver}")
+                print(f"🔧 Pit stop detected: {driver}")
 
+            # Position change detection
             if data.get("position") != prevData.get("position"):
                 if data.get("position") < prevData.get("position"):
                     events.append(f"overtake:{driver}")
+                    print(f"🏎️ Overtake detected: {driver}")
 
+            # DRS activation
             if data.get("drs", 0) > 0 and prevData.get("drs", 0) == 0:
                 events.append(f"drs_active:{driver}")
+                print(f"💨 DRS activated: {driver}")
 
+            # High speed detection
             if data.get("speed", 0) > 320:
                 events.append(f"high_speed:{driver}")
 
+        if events:
+            print(f"📊 Total events detected this frame: {len(events)}")
+        
         return events
 
 
@@ -174,7 +254,9 @@ class CommentaryManager:
 
     def loadRegulations(self, regulations: Dict):
         """Load F1 regulations from Docling."""
-        self.aiCommentary.loadRegulationsKnowledge(regulations)
+        sections_count = self.aiCommentary.loadRegulationsKnowledge(regulations)
+        print(f"✅ CommentaryManager: Regulations loaded and ready for context injection")
+        return sections_count
 
     def shouldGenerateCommentary(self, currentTime: float) -> bool:
         """Check if 1 minute has passed in real-world time."""
