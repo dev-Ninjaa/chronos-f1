@@ -521,18 +521,26 @@ body {
 
 /* Telemetry Comparison Overlay */
 .telemetry-comparison {
-    position: absolute;
+    position: fixed; /* better for viewport overlays */
     top: 20px;
     right: 20px;
-    width: 420px;
+
+    width: min(420px, calc(100vw - 40px));
     max-height: calc(100vh - 40px);
+
+    box-sizing: border-box; /* important */
+    
     background: rgba(10, 10, 10, 0.98);
     border: 2px solid #e10600;
     border-radius: 12px;
     padding: 1.5rem;
+
     overflow-y: auto;
+    overflow-x: hidden; /* prevents horizontal spill */
+
     box-shadow: 0 10px 40px rgba(225, 6, 0, 0.4);
-    z-index: 100;
+    z-index: 1000;
+
     animation: slideInRight 0.3s ease-out;
 }
 
