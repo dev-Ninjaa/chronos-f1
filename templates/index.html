@@ -119,7 +119,49 @@
                 <!-- AI Commentary -->
                 <div class="section" id="aiCommentarySection" style="display: none;">
                     <h2>🎙️ AI Commentary</h2>
+                    
+                    <!-- Commentary Mode Toggle -->
+                    <div class="commentary-mode-toggle">
+                        <button id="fanModeBtn" class="mode-btn active" onclick="setCommentaryMode('fan')">
+                            👥 Fan
+                        </button>
+                        <button id="engineerModeBtn" class="mode-btn" onclick="setCommentaryMode('engineer')">
+                            ⚙️ Engineer
+                        </button>
+                    </div>
+                    
+                    <!-- TTS Controls -->
+                    <div class="tts-controls">
+                        <button id="ttsToggle" class="tts-btn active" onclick="toggleTTS()">
+                            🔊 <span id="ttsToggleText">Voice On</span>
+                        </button>
+                    </div>
+                    
                     <div id="aiCommentary" class="ai-commentary-box"></div>
+                </div>
+                
+                <!-- Race Debrief Button -->
+                <div class="section" id="debriefSection" style="display: none;">
+                    <button class="btn btn-primary" onclick="requestRaceDebrief()" style="width: 100%;">
+                        📊 Race Debrief
+                    </button>
+                </div>
+                
+                <!-- Ghost Toggle -->
+                <div class="section" id="ghostSection" style="display: none;">
+                    <button class="btn btn-ghost" onclick="toggleGhost(!ghostEnabled)" style="width: 100%;">
+                        👻 <span id="ghostToggleText">Enable Ghost</span>
+                    </button>
+                    <div id="ghostPanel" style="margin-top: 10px; display: flex; justify-content: space-between; gap: 10px;">
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; opacity: 0.8;">Lap Delta</div>
+                            <div id="lapDelta" class="delta-value" style="font-weight: 700;">+0.000</div>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 12px; opacity: 0.8;">Reference</div>
+                            <div id="ghostRef" style="font-weight: 700;">Fastest Lap</div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Strategy Insights (Langflow) -->
@@ -182,7 +224,7 @@
                         <button id="toggleWeather" class="feature-toggle active" title="Toggle Weather">☁️</button>
                     </div>
                     <div class="progress-bar">
-                        <input type="range" id="progressSlider" min="0" max="100" value="0" class="slider">
+                        <input type="range" id="progressSlider" min="0" max="0" value="0" step="1" class="slider">
                         <div class="progress-info">
                             <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
                         </div>
