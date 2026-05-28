@@ -162,17 +162,22 @@ class GhostEngine:
         # Determine color
         deltaColor = self._getDeltaColor(lapDelta, isGaining)
         
-        return {
+        result = {
             'lap_delta': float(lapDelta),
             'sector_deltas': sectorDeltas,
             'current_sector': currentSector,
             'delta_color': deltaColor,
-            # Ensure JSON-serializable (numpy.bool_ can appear from comparisons)
             'is_gaining': bool(isGaining),
             'speed_diff': float(speedDiff),
             'ghost_driver': self.ghostDriver,
             'ghost_lap_time': self.ghostLapTime
         }
+        
+        # Debug logging (only occasionally to avoid spam)
+        if len(self.deltaHistory) % 50 == 0:
+            print(f"👻 Ghost Delta: {lapDelta:+.3f}s | Speed Δ: {speedDiff:+.0f} km/h | Sector: {currentSector+1} | Color: {deltaColor}")
+        
+        return result
     
     def _getCurrentSector(self, distance: float) -> int:
         """Determine current sector based on distance"""
@@ -194,26 +199,39 @@ class GhostEngine:
             return [0.0, 0.0, 0.0]
         
         deltas = []
+        ghostDist = self.ghostTelemetry['dist']
+        ghostTime = self.ghostTelemetry['t']
         
-        for sector in self.ghostSectors:
-            # Find ghost time at sector end
-            ghostDist = self.ghostTelemetry['dist']
-            ghostTime = self.ghostTelemetry['t']
-            
+        for i, sector in enumerate(self.ghostSectors):
+            # Find ghost time at sector boundaries
+            sectorStartIdx = np.searchsorted(ghostDist, sector['start_dist'])
             sectorEndIdx = np.searchsorted(ghostDist, sector['end_dist'])
             
-            if sectorEndIdx < len(ghostTime):
-                ghostSectorTime = ghostTime[sectorEndIdx]
+            if sectorEndIdx < len(ghostTime) and sectorStartIdx < len(ghostTime):
+                ghostSectorStartTime = ghostTime[sectorStartIdx]
+                ghostSectorEndTime = ghostTime[sectorEndIdx]
+                ghostSectorTime = ghostSectorEndTime - ghostSectorStartTime
                 
-                # If we've passed this sector, calculate delta
+                # If we've passed this sector, calculate actual delta
                 if currentDistance >= sector['end_dist']:
-                    # Find our time at sector end
-                    # (Simplified - in real implementation, track actual sector times)
-                    delta = 0.0  # Placeholder
+                    # Find current time at sector end
+                    currentSectorEndIdx = np.searchsorted(ghostDist, sector['end_dist'])
+                    if currentSectorEndIdx < len(ghostTime):
+                        # Estimate current sector time based on current progress
+                        currentSectorTime = currentTime - ghostSectorStartTime
+                        delta = currentSectorTime - ghostSectorTime
+                        deltas.append(float(delta))
+                    else:
+                        deltas.append(0.0)
+                elif currentDistance >= sector['start_dist']:
+                    # Currently in this sector - show live delta
+                    currentSectorTime = currentTime - ghostSectorStartTime
+                    ghostProgressTime = ghostTime[np.searchsorted(ghostDist, currentDistance)] - ghostSectorStartTime
+                    delta = currentSectorTime - ghostProgressTime
+                    deltas.append(float(delta))
                 else:
-                    delta = 0.0
-                
-                deltas.append(delta)
+                    # Haven't reached this sector yet
+                    deltas.append(0.0)
             else:
                 deltas.append(0.0)
         
@@ -281,22 +299,37 @@ class GhostEngine:
         print("👻 Ghost comparison reset")
 
 
-def createGhostFromFastestLap(session, trackData: Dict) -> Optional[GhostEngine]:
+def createGhostFromFastestLap(session, trackData: Dict, excludeDriver: Optional[str] = None) -> Optional[GhostEngine]:
     """
     Create ghost engine from session's fastest lap.
     
     Args:
         session: FastF1 session object
         trackData: Track layout data
+        excludeDriver: Optional driver code to exclude (e.g., to avoid comparing driver to themselves)
     
     Returns:
         GhostEngine instance or None
     """
     try:
-        # Find fastest lap
-        fastestLap = session.laps.pick_fastest()
+        # Get all laps sorted by lap time
+        allLaps = session.laps.copy()
         
-        if fastestLap is None or fastestLap.empty:
+        # Filter out invalid laps
+        allLaps = allLaps[allLaps['LapTime'].notna()]
+        
+        # Exclude specific driver if requested
+        if excludeDriver:
+            allLaps = allLaps[allLaps['Driver'] != excludeDriver]
+        
+        if allLaps.empty:
+            print("⚠️ No valid laps found")
+            return None
+        
+        # Find fastest lap
+        fastestLap = allLaps.loc[allLaps['LapTime'].idxmin()]
+        
+        if fastestLap is None or (hasattr(fastestLap, 'empty') and fastestLap.empty):
             print("⚠️ No fastest lap found")
             return None
         
@@ -332,6 +365,8 @@ def createGhostFromFastestLap(session, trackData: Dict) -> Optional[GhostEngine]
         
     except Exception as e:
         print(f"❌ Error creating ghost: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
