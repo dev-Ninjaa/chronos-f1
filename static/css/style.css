@@ -519,6 +519,151 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Telemetry Comparison Overlay */
+.telemetry-comparison {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 420px;
+    max-height: calc(100vh - 40px);
+    background: rgba(10, 10, 10, 0.98);
+    border: 2px solid #e10600;
+    border-radius: 12px;
+    padding: 1.5rem;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(225, 6, 0, 0.4);
+    z-index: 100;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.telemetry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e10600;
+}
+
+.telemetry-header h3 {
+    margin: 0;
+    color: #e10600;
+    font-size: 1.2rem;
+}
+
+.close-comparison-btn {
+    background: none;
+    border: none;
+    color: #e10600;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.close-comparison-btn:hover {
+    background: rgba(225, 6, 0, 0.2);
+    transform: rotate(90deg);
+}
+
+.telemetry-drivers {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.comparison-driver-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.driver-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #000;
+}
+
+.telemetry-charts-container {
+    margin-bottom: 1rem;
+}
+
+.chart-section {
+    margin-bottom: 1.5rem;
+}
+
+.chart-section h4 {
+    margin: 0 0 0.5rem 0;
+    color: #aaa;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.chart-section canvas {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    border: 1px solid #333;
+}
+
+.telemetry-stats {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #333;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #222;
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.stat-values {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-value {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
 /* Controls */
 .controls {
     background: #1a1a1a;
@@ -751,6 +896,167 @@ body {
     color: #4ade80;
 }
 
+/* Tyre Strategy Panel */
+.tyre-strategy-panel {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.tyre-strategy-item {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-radius: 8px;
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.tyre-strategy-item:hover {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+    transform: translateX(2px);
+}
+
+.tyre-strategy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.tyre-driver-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tyre-driver-code {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.tyre-compound-badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #000;
+}
+
+.tyre-compound-badge.SOFT {
+    background: #ff0000;
+}
+
+.tyre-compound-badge.MEDIUM {
+    background: #ffff00;
+}
+
+.tyre-compound-badge.HARD {
+    background: #ffffff;
+}
+
+.tyre-compound-badge.INTERMEDIATE {
+    background: #00ff00;
+}
+
+.tyre-compound-badge.WET {
+    background: #0000ff;
+    color: #fff;
+}
+
+.tyre-age {
+    font-size: 0.85rem;
+    color: #aaa;
+}
+
+.tyre-health-display {
+    margin-top: 0.5rem;
+}
+
+.tyre-health-bar-container {
+    width: 100%;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.3rem;
+}
+
+.tyre-health-bar-fill {
+    height: 100%;
+    transition: width 0.5s ease, background 0.5s ease;
+    border-radius: 4px;
+}
+
+.tyre-health-bar-fill.excellent {
+    background: linear-gradient(90deg, #00ff00, #4ade80);
+}
+
+.tyre-health-bar-fill.good {
+    background: linear-gradient(90deg, #ffff00, #ffd700);
+}
+
+.tyre-health-bar-fill.warning {
+    background: linear-gradient(90deg, #ff8800, #ff6600);
+}
+
+.tyre-health-bar-fill.critical {
+    background: linear-gradient(90deg, #ff0000, #cc0000);
+    animation: pulse-critical 1s infinite;
+}
+
+@keyframes pulse-critical {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.tyre-health-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+}
+
+.tyre-health-value {
+    font-weight: bold;
+}
+
+.tyre-health-value.excellent {
+    color: #00ff00;
+}
+
+.tyre-health-value.good {
+    color: #ffff00;
+}
+
+.tyre-health-value.warning {
+    color: #ff8800;
+}
+
+.tyre-health-value.critical {
+    color: #ff0000;
+}
+
+.tyre-remaining-laps {
+    color: #aaa;
+}
+
+.tyre-pit-recommendation {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 136, 0, 0.2);
+    border: 1px solid #ff8800;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #ff8800;
+    font-weight: bold;
+    text-align: center;
+    animation: pulse-recommendation 2s infinite;
+}
+
+@keyframes pulse-recommendation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
 
 /* ===== NEW FEATURES: Fan/Engineer Mode, Race Debrief, Ghost, TTS ===== */
 
@@ -966,4 +1272,63 @@ body {
 .commentary-display.speaking {
     border-color: #4ade80;
     box-shadow: 0 10px 40px rgba(74, 222, 128, 0.4);
+}
+
+/* Regulations Display */
+.regulations-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.regulation-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #e10600;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.regulation-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.regulation-item.active {
+    border-left-color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+    animation: pulse-regulation 2s infinite;
+}
+
+@keyframes pulse-regulation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.regulation-title {
+    font-weight: 600;
+    font-size: 13px;
+    color: #e10600;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.regulation-item.active .regulation-title {
+    color: #00ff00;
+}
+
+.regulation-content {
+    font-size: 12px;
+    line-height: 1.5;
+    color: #ccc;
+}
+
+.regulation-timestamp {
+    font-size: 10px;
+    opacity: 0.5;
+    margin-top: 6px;
+    text-align: right;
 }
