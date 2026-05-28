@@ -11,6 +11,10 @@ from manager.dataManager import DataManager
 from replay.replayEngine import ReplayEngine
 from ai.aiCommentary import CommentaryManager
 from ai.graniteClient import GraniteClient
+from ai.intelligenceEngine import IntelligenceEngine
+from ai.commentaryModes import CommentaryModes
+from ai.raceDebrief import RaceDebriefGenerator
+from replay.ghostEngine import GhostEngine, createGhostFromFastestLap
 from documents.documentProcessor import DocumentProcessor
 from workflows.langflowIntegration import F1WorkflowOrchestrator
 
@@ -29,6 +33,13 @@ commentary_manager = None
 granite_client = None
 ai_enabled = False
 
+# New AI features
+intelligence_engine = None
+commentary_modes = None
+race_debrief_generator = None
+ghost_engine = None
+commentary_mode = "fan"  # Default: fan mode
+
 # Docling integration
 document_processor = None
 regulations_loaded = False
@@ -38,12 +49,23 @@ workflow_orchestrator = None
 workflows_enabled = False
 
 try:
-    # Initialize Gemini client
+    # Initialize local Ollama client
     granite_client = GraniteClient()
     if granite_client.isAvailable():
         commentary_manager = CommentaryManager()
         ai_enabled = True
-        print('✅ AI Commentary enabled (Gemini)')
+        print('✅ AI Commentary enabled (Ollama)')
+        
+        # Initialize new AI features (optional)
+        try:
+            intelligence_engine = IntelligenceEngine()
+            commentary_modes = CommentaryModes()
+            race_debrief_generator = RaceDebriefGenerator()
+            print('✅ Intelligence Engine initialized')
+            print('✅ Commentary Modes initialized (Fan/Engineer)')
+            print('✅ Race Debrief Generator initialized')
+        except Exception as e:
+            print(f'⚠️ Advanced AI features not available: {e}')
         
         # Initialize Docling for regulations
         try:
@@ -101,7 +123,7 @@ try:
         except Exception as e:
             print(f'⚠️ Langflow not available: {e}')
     else:
-        print('⚠️ AI Commentary disabled (Gemini API not available)')
+        print('⚠️ AI Commentary disabled (Ollama not available)')
 except Exception as e:
     print(f'⚠️ AI Features disabled: {e}')
 
@@ -135,7 +157,7 @@ def get_races(year):
 @app.route('/api/load-race', methods=['POST'])
 def load_race():
     """Load race data for replay"""
-    global replay_engine
+    global replay_engine, ghost_engine, intelligence_engine
     
     try:
         data = request.json
@@ -148,11 +170,27 @@ def load_race():
         
         # Start loading in background thread
         def load_in_background():
-            global replay_engine
+            global replay_engine, ghost_engine, intelligence_engine
             try:
                 with replay_lock:
                     race_data = data_manager.loadRaceData(year, round_num, session_type, socketio)
                     replay_engine = ReplayEngine(race_data, socketio)
+                    
+                    # Reset intelligence engine per race
+                    if intelligence_engine:
+                        intelligence_engine = IntelligenceEngine()
+                    
+                    # Try to create ghost engine (fastest-lap reference)
+                    ghost_engine = None
+                    try:
+                        import fastf1
+                        session = fastf1.get_session(year, round_num, session_type)
+                        session.load(telemetry=True)
+                        ghost_engine = createGhostFromFastestLap(session, race_data['trackData'])
+                        if ghost_engine:
+                            print(f"✅ Ghost engine created for {ghost_engine.ghostDriver}")
+                    except Exception as e:
+                        print(f"⚠️ Could not create ghost engine: {e}")
                 
                 socketio.emit('race_loaded', {
                     'success': True,
@@ -166,7 +204,8 @@ def load_race():
                         'drivers': race_data['drivers'],
                         'hasWeather': race_data.get('hasWeather', False),
                         'hasDrsZones': race_data.get('hasDrsZones', False),
-                        'trackData': race_data['trackData']
+                        'trackData': race_data['trackData'],
+                        'hasGhost': ghost_engine is not None
                     }
                 })
             except Exception as e:
@@ -266,8 +305,72 @@ def handle_get_ai_status():
         'enabled': ai_enabled,
         'models': granite_client.listModels() if granite_client else [],
         'docling': regulations_loaded,
-        'langflow': workflows_enabled
+        'langflow': workflows_enabled,
+        'intelligence_engine': intelligence_engine is not None,
+        'commentary_modes': commentary_modes is not None,
+        'race_debrief': race_debrief_generator is not None,
+        'ghost_engine': ghost_engine is not None,
+        'current_mode': commentary_mode
     })
+
+
+@socketio.on('set_commentary_mode')
+def handle_set_commentary_mode(data):
+    """Set commentary mode: fan or engineer"""
+    global commentary_mode
+    
+    mode = data.get('mode', 'fan')
+    if mode not in ['fan', 'engineer']:
+        emit('error', {'message': 'Invalid mode. Use \"fan\" or \"engineer\"'})
+        return
+    
+    commentary_mode = mode
+    if commentary_modes:
+        commentary_modes.setMode(mode)
+    
+    emit('commentary_mode_changed', {'mode': mode}, broadcast=True)
+    print(f"✅ Commentary mode changed to: {mode.upper()}")
+
+
+@socketio.on('request_race_debrief')
+def handle_request_race_debrief():
+    """Generate and send race debrief"""
+    global intelligence_engine, race_debrief_generator, replay_engine
+    
+    if not intelligence_engine or not race_debrief_generator:
+        emit('error', {'message': 'Race debrief not available'})
+        return
+    
+    if not replay_engine:
+        emit('error', {'message': 'No race loaded'})
+        return
+    
+    try:
+        print("🏁 Generating race debrief...")
+        raceData = replay_engine.raceData
+        debrief = race_debrief_generator.generateDebrief(intelligence_engine, raceData)
+        emit('race_debrief', debrief)
+        print("✅ Race debrief sent to client")
+    except Exception as e:
+        print(f"❌ Error generating race debrief: {e}")
+        import traceback
+        traceback.print_exc()
+        emit('error', {'message': f'Error generating debrief: {str(e)}'})
+
+
+@socketio.on('toggle_ghost')
+def handle_toggle_ghost(data):
+    """Toggle ghost comparison on/off"""
+    global ghost_engine
+    
+    enabled = data.get('enabled', False)
+    
+    if enabled and ghost_engine:
+        emit('ghost_status', {'enabled': True, 'driver': ghost_engine.ghostDriver})
+    elif not enabled:
+        emit('ghost_status', {'enabled': False})
+    else:
+        emit('error', {'message': 'Ghost engine not available'})
 
 
 @socketio.on('get_analysis_results')
@@ -334,6 +437,12 @@ def broadcast_telemetry():
     """Background thread to broadcast telemetry data"""
     previous_frame = None
     analysis_counter = 0  # Counter for periodic analysis
+    replay_completed = False
+    
+    # Commentary batching: collect events for 60s, then emit 1 commentary message.
+    commentary_window_start = None
+    buffered_events = []
+    latest_insight_for_window = None
     
     while True:
         try:
@@ -343,11 +452,74 @@ def broadcast_telemetry():
                     if telemetry_data:
                         socketio.emit('telemetry_update', telemetry_data)
                         
-                        # Generate AI commentary if enabled
-                        if ai_enabled and commentary_manager:
+                        # Use Intelligence Engine to analyze frame (preferred)
+                        if intelligence_engine:
+                            try:
+                                insight = intelligence_engine.analyzeFrame(telemetry_data, previous_frame)
+                                latest_insight_for_window = insight
+                                
+                                now = time.time()
+                                if commentary_window_start is None:
+                                    commentary_window_start = now
+                                
+                                if insight.get('events'):
+                                    buffered_events.extend(insight.get('events', []))
+                                
+                                # Generate ONE commentary message per 60 seconds (wall-clock time)
+                                if commentary_modes and commentary_window_start is not None:
+                                    if (now - commentary_window_start) >= 60:
+                                        batchInsight = dict(latest_insight_for_window or insight or {})
+                                        batchInsight['events'] = buffered_events
+                                        
+                                        commentary = commentary_modes.generateCommentary(batchInsight)
+                                        if not commentary:
+                                            commentary = commentary_modes.generateFallbackCommentary(batchInsight)
+                                        
+                                        if commentary:
+                                            print(f"✅ {commentary_mode.upper()} Commentary: {commentary}")
+                                            socketio.emit('ai_commentary', {
+                                                'text': commentary,
+                                                'time': telemetry_data.get('t', 0),
+                                                'mode': commentary_mode
+                                            })
+                                        
+                                        commentary_window_start = now
+                                        buffered_events = []
+                                
+                                # Broadcast ghost comparison if enabled
+                                if ghost_engine:
+                                    try:
+                                        frame = telemetry_data.get('frame', telemetry_data)
+                                        drivers = frame.get('drivers', {})
+                                        
+                                        leader = min(drivers.items(), key=lambda x: x[1].get('position', 999), default=(None, {}))
+                                        if leader[0]:
+                                            leaderData = leader[1]
+                                            currentDist = leaderData.get('dist', 0)
+                                            currentTime = telemetry_data.get('t', 0)
+                                            currentSpeed = leaderData.get('speed', 0)
+                                            
+                                            ghostPos = ghost_engine.getGhostPosition(currentTime, currentDist)
+                                            delta = ghost_engine.calculateDelta(currentTime, currentDist, currentSpeed)
+                                            
+                                            if ghostPos and delta:
+                                                socketio.emit('ghost_update', {
+                                                    'ghost_position': ghostPos,
+                                                    'delta': delta
+                                                })
+                                    except Exception as e:
+                                        print(f"❌ Ghost comparison error: {e}")
+                            
+                            except Exception as e:
+                                print(f"❌ Intelligence Engine error: {e}")
+                                import traceback
+                                traceback.print_exc()
+                        
+                        # Fallback to old commentary system
+                        elif ai_enabled and commentary_manager:
                             try:
                                 commentary = commentary_manager.generateForFrame(
-                                    telemetry_data, 
+                                    telemetry_data,
                                     previous_frame
                                 )
                                 if commentary:
@@ -380,6 +552,15 @@ def broadcast_telemetry():
                                         })
                                 except Exception as e:
                                     print(f"❌ Workflow analysis error: {e}")
+                        
+                        # Check if replay completed
+                        if replay_engine.currentFrame >= replay_engine.totalFrames - 1:
+                            if not replay_completed:
+                                replay_completed = True
+                                print("🏁 Replay completed - triggering race debrief")
+                                socketio.emit('replay_completed', {'completed': True})
+                        else:
+                            replay_completed = False
                         
                         previous_frame = telemetry_data
             
