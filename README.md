@@ -136,13 +136,7 @@ Formula 1 generates **1.5 million data points per second** during a race. Teams,
 | **Langflow** | Workflow orchestration | ✅ **Working** | `workflows/langflowIntegration.py` with built-in implementations |
 
 **Note on AI Models:**  
-We are using **IBM Granite** via **local Ollama** for AI commentary generation. The architecture is designed to be model-agnostic, and models can easily be swapped or changed from the `.env` file.
-
-**Why Local Ollama?**
-- ✅ Free, completely offline, and private
-- ✅ Fast response times locally
-- ✅ Easy model switching via `.env`
-- ✅ Full alignment with IBM's AI ecosystem using Granite models
+We are using **IBM Granite** via **local Ollama** for AI commentary generation. For detailed instructions on installing Ollama, setting up IBM Granite, and configuring models, please refer to the [Ollama & Granite Setup Guide](OLLAMA_GRANITE.md).
 
 ### Supporting Technologies
 
@@ -156,99 +150,7 @@ We are using **IBM Granite** via **local Ollama** for AI commentary generation. 
 
 ## 📦 Installation & Setup
 
-### Prerequisites
-
-- **Python 3.11+** (3.12 recommended)
-- **uv** package manager (faster than pip) - [Install UV](https://docs.astral.sh/uv/getting-started/installation/)
-- **Git** for cloning
-- **Modern browser** (Chrome, Edge, Firefox)
-- **Ollama** installed locally (for AI commentary)
-
-### Quick Start (5 Minutes)
-
-#### Option 1: Using UV (Recommended - Faster)
-
-```bash
-# 1. Install UV (if not already installed)
-# Windows (PowerShell):
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-# Linux/Mac:
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# 2. Clone the repository
-git clone https://github.com/dev-Ninjaa/chronos-f1.git
-cd chronos-f1
-
-# 3. Create virtual environment with UV
-uv venv
-
-# 4. Activate virtual environment
-# Windows PowerShell:
-.\.venv\Scripts\activate
-# Windows CMD:
-.venv\Scripts\activate.bat
-# Linux/Mac:
-source .venv/bin/activate
-
-# 5. Install dependencies with UV (much faster!)
-uv pip install -r requirements.txt
-
-# 6. Configure AI services
-cp .env.example .env
-# By default, it connects to local Ollama using granite3.3:2b.
-# Edit .env to change models if needed:
-# OLLAMA_MODEL=granite3.3:1b
-# 7. Verify installation (recommended)
-python check_dependencies.py
-
-# 8. Test AI features (optional)
-python -m test.test_ai_features
-
-# 9. Start the application
-python app.py
-
-# 10. Open browser
-# Navigate to: http://localhost:5000
-```
-
-#### Option 2: Using pip (Traditional)
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/dev-Ninjaa/chronos-f1.git
-cd chronos-f1
-
-# 2. Create virtual environment
-python -m venv .venv
-
-# 3. Activate virtual environment
-# Windows PowerShell:
-.\.venv\Scripts\activate
-# Windows CMD:
-.venv\Scripts\activate.bat
-# Linux/Mac:
-source .venv/bin/activate
-
-# 4. Install dependencies (includes Docling & Langflow)
-pip install -r requirements.txt
-
-# 5. Configure AI services
-cp .env.example .env
-# By default, it connects to local Ollama using granite3.3:2b.
-# Edit .env to change models if needed:
-# OLLAMA_MODEL=granite3.3:1b
-# 6. Verify installation (recommended)
-python check_dependencies.py
-
-# 7. Test AI features (optional)
-python -m test.test_ai_features
-
-# 8. Start the application
-python app.py
-
-# 9. Open browser
-# Navigate to: http://localhost:5000
-```
+For detailed project setup instructions, commands, environment configuration, and running the application, please refer to the [Setup Guide](SETUP.md).
 
 ---
 
@@ -296,109 +198,7 @@ python app.py
 
 ## 🏗️ Project Architecture
 
-```
-chronos-f1/
-│
-├── 🤖 AI Intelligence Layer
-│   ├── ai/
-│   │   ├── graniteClient.py          # IBM Granite AI client via Ollama
-│   │   ├── aiCommentary.py           # Commentary generation engine
-│   │   └── __init__.py
-│   │
-│   ├── documents/
-│   │   ├── documentProcessor.py      # Docling integration
-│   │   ├── f1_regulations_sample.md  # F1 regulations database
-│   │   └── __init__.py
-│   │
-│   └── workflows/
-│       ├── langflowIntegration.py    # Langflow orchestration
-│       └── __init__.py
-│
-├── 📊 Data Processing Layer
-│   ├── manager/
-│   │   ├── dataManager.py            # FastF1 data processing
-│   │   └── __init__.py
-│   │
-│   ├── replay/
-│   │   ├── replayEngine.py           # Replay state management
-│   │   └── __init__.py
-│   │
-│   ├── models/
-│   │   ├── tyreModel.py             # Bayesian tyre degradation
-│   │   └── safetyCarModel.py        # Safety car simulation
-│   │
-│   └── utils/
-│       ├── trackUtils.py            # Track geometry & DRS zones
-│       └── weatherUtils.py          # Weather data formatting
-│
-├── 🌐 Web Application Layer
-│   ├── app.py                        # Flask + SocketIO server
-│   │
-│   ├── templates/
-│   │   └── index.html               # Main UI
-│   │
-│   └── static/
-│       ├── css/style.css            # Dark theme styling
-│       └── js/app.js                # Frontend logic
-│
-├── 🧪 Testing
-│   └── test/
-│       ├── test_ai_features.py      # AI features test suite
-│       └── __init__.py
-│
-├── 📚 Documentation & Examples
-│   ├── README.md                     # This file
-│   ├── docs/
-│   │   ├── PROJECT_STRUCTURE.md     # Architecture details
-│   │   └── QUICK_START.md           # 3-minute guide
-│   │
-│   └── examples/
-│       ├── aiCommentaryExample.py   # AI usage examples
-│       ├── documentProcessingExample.py
-│       └── workflowExample.py
-│
-├── ⚙️ Configuration
-│   ├── requirements.txt              # Python dependencies
-│   ├── .env.example                  # Environment template
-│   ├── .gitignore                    # Git ignore rules
-│   └── start.bat                     # Windows launcher
-│
-└── 💾 Data & Cache
-    ├── .fastf1-cache/                # FastF1 API cache
-    ├── computed_data/                # Processed telemetry
-    └── document_cache/               # Docling processed docs
-```
-
-### Data Flow Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        User Browser                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ Track Canvas │  │ Leaderboard  │  │ AI Commentary│      │
-│  └──────────────┘  └──────────────┘  └──────────────┘      │
-└────────────────────────┬────────────────────────────────────┘
-                         │ WebSocket (25 FPS)
-                         ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Flask + SocketIO Server                   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              Replay Engine (replayEngine.py)         │   │
-│  │  • Playback state management                         │   │
-│  │  • Frame interpolation                               │   │
-│  │  • Gap calculations                                  │   │
-│  └──────────────────────────────────────────────────────┘   │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-        ┌────────────────┼────────────────┐
-        ▼                ▼                ▼
-┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│ Data Manager │  │  AI Layer    │  │  Models      │
-│              │  │              │  │              │
-│ • FastF1 API │  │ • Granite AI │  │ • Tyre Model │
-│ • Telemetry  │  │ • Docling    │  │ • Safety Car │
-│ • Weather    │  │ • Langflow   │  │ • Track Geo  │
-└──────────────┘  └──────────────┘  └──────────────┘
+For detailed information regarding the project's folder structure, data flow, and architectural design, please refer to the [Architecture Guide](architecture.md).
 ```
 
 ---
@@ -631,61 +431,13 @@ rates = {
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how to get started:
-
-### Development Setup
-
-```bash
-# 1. Fork the repository
-# 2. Clone your fork
-git clone https://github.com/dev-Ninjaa/chronos-f1.git
-
-# 3. Create a feature branch
-git checkout -b feature/amazing-feature
-
-# 4. Make your changes
-# 5. Test thoroughly
-python -m pytest tests/
-
-# 6. Commit with clear messages
-git commit -m "Add amazing feature: detailed description"
-
-# 7. Push to your fork
-git push origin feature/amazing-feature
-
-# 8. Open a Pull Request
-```
-
-### Contribution Guidelines
-
-- **Code Style:** Follow PEP 8 for Python, ESLint for JavaScript
-- **Documentation:** Update README and docstrings
-- **Testing:** Add tests for new features
-- **Commits:** Use conventional commit messages
-- **Issues:** Check existing issues before creating new ones
-
-### Areas for Contribution
-
-- 🐛 **Bug fixes** - Help us squash bugs
-- ✨ **New features** - Implement from roadmap
-- 📚 **Documentation** - Improve guides and examples
-- 🎨 **UI/UX** - Enhance visual design
-- 🧪 **Testing** - Increase test coverage
-- 🌍 **Translations** - Add language support
+We welcome contributions! For detailed instructions on cloning the repository, development setup, and contribution guidelines, please refer to our [Contributing Guide](contributing.md).
 
 ---
 
 ## 📄 License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### Third-Party Licenses
-
-- **FastF1** - MIT License
-- **Flask** - BSD License
-- **IBM Granite** - Apache 2.0 License
-- **Docling** - MIT License
-- **Langflow** - MIT License
 
 ---
 
