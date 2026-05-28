@@ -180,11 +180,16 @@ class ChronosF1Enhanced {
         this.canvas = document.getElementById('trackCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
+        this.canvas.addEventListener('contextmenu', (e) => this.handleCanvasClick(e));
         window.addEventListener('resize', () => this.resizeCanvas());
     }
 
     handleCanvasClick(e) {
         if (!this.currentTelemetry || !this.currentTelemetry.frame || !this.currentTelemetry.frame.drivers) return;
+        const isRightClick = e.type === 'contextmenu' || e.button === 2;
+        if (isRightClick) {
+            e.preventDefault();
+        }
         const rect = this.canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
@@ -204,10 +209,68 @@ class ChronosF1Enhanced {
 
         // Select only if click is near a car
         if (best && bestDist <= 16) {
-            this.selectedDrivers = [best];
-            this.updateLeaderboard(this.currentTelemetry.frame.drivers);
-            this.drawFrame();
+            this.selectDriver(best, isRightClick, this.currentTelemetry.frame.drivers);
         }
+    }
+
+    selectDriver(code, isMultiSelect = false, drivers = null) {
+        if (!code) return;
+
+        if (isMultiSelect) {
+            const idx = this.selectedDrivers.indexOf(code);
+            if (idx > -1) {
+                this.selectedDrivers.splice(idx, 1);
+            } else {
+                this.selectedDrivers.push(code);
+            }
+        } else {
+            this.selectedDrivers = [code];
+        }
+
+        const driverMap = drivers || (this.currentTelemetry && this.currentTelemetry.frame
+            ? this.currentTelemetry.frame.drivers
+            : null);
+        if (driverMap) {
+            this.updateLeaderboard(driverMap);
+        }
+
+        this.syncComparisonPanelState();
+        this.drawFrame();
+    }
+
+    syncComparisonPanelState() {
+        // Request comparison if 2+ drivers selected
+        if (this.selectedDrivers.length >= 2) {
+            this.requestDriverComparison();
+
+            // Start continuous comparison updates
+            if (this.comparisonInterval) {
+                clearInterval(this.comparisonInterval);
+            }
+            this.comparisonInterval = setInterval(() => {
+                if (this.selectedDrivers.length >= 2) {
+                    this.requestDriverComparison();
+                }
+            }, 500);  // Update every 500ms
+            return;
+        }
+
+        // Close comparison if less than 2 drivers
+        if (this.comparisonInterval) {
+            clearInterval(this.comparisonInterval);
+            this.comparisonInterval = null;
+        }
+        const panel = document.getElementById('telemetryComparison');
+        if (panel) {
+            panel.style.display = 'none';
+        }
+        this.showComparison = false;
+        this.comparisonHistory = {
+            speed: [],
+            throttle: [],
+            brake: [],
+            gear: []
+        };
     }
     
     updateConnectionStatus(connected) {
@@ -925,52 +988,16 @@ class ChronosF1Enhanced {
                 ${statusBadge}
             `;
             
+            item.title = 'Left click: select only this driver. Right click: add/remove for comparison.';
+
             item.addEventListener('click', (e) => {
-                if (e.shiftKey) {
-                    // Multi-select
-                    const idx = this.selectedDrivers.indexOf(code);
-                    if (idx > -1) {
-                        this.selectedDrivers.splice(idx, 1);
-                    } else {
-                        this.selectedDrivers.push(code);
-                    }
-                } else {
-                    // Single select
-                    this.selectedDrivers = [code];
-                }
-                this.updateLeaderboard(drivers);
-                
-                // Request comparison if 2+ drivers selected
-                if (this.selectedDrivers.length >= 2) {
-                    this.requestDriverComparison();
-                    
-                    // Start continuous comparison updates
-                    if (this.comparisonInterval) {
-                        clearInterval(this.comparisonInterval);
-                    }
-                    this.comparisonInterval = setInterval(() => {
-                        if (this.selectedDrivers.length >= 2) {
-                            this.requestDriverComparison();
-                        }
-                    }, 500);  // Update every 500ms
-                } else {
-                    // Close comparison if less than 2 drivers
-                    if (this.comparisonInterval) {
-                        clearInterval(this.comparisonInterval);
-                        this.comparisonInterval = null;
-                    }
-                    const panel = document.getElementById('telemetryComparison');
-                    if (panel) {
-                        panel.style.display = 'none';
-                    }
-                    this.showComparison = false;
-                    this.comparisonHistory = {
-                        speed: [],
-                        throttle: [],
-                        brake: [],
-                        gear: []
-                    };
-                }
+                e.preventDefault();
+                this.selectDriver(code, false, drivers);
+            });
+
+            item.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                this.selectDriver(code, true, drivers);
             });
             
             leaderboard.appendChild(item);
