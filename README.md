@@ -150,7 +150,14 @@ We are using **IBM Granite** via **local Ollama** for AI commentary generation. 
 
 ## 📦 Installation & Setup
 
-For detailed project setup instructions, commands, environment configuration, and running the application, please refer to the [Setup Guide](SETUP.md).
+We provide automated setup scripts in the `scripts/` directory for a quick and easy start. **Important: Each script must be run in a separate terminal window.**
+
+- `scripts/env.bat` or `.sh`: Initializes the `.env` configuration file.
+- `scripts/Granite.bat` or `.sh`: Starts the local Ollama instance with the IBM Granite model.
+- `scripts/langflow.bat` or `.sh`: Starts the Langflow server for workflow orchestration.
+- `scripts/start.bat` or `.sh`: Sets up the virtual environment, installs dependencies, and launches the Chronos F1 web app.
+
+For detailed project setup instructions, commands, manual environment configuration, and running the application without scripts, please refer to the [Setup Guide](SETUP.md). Also, see the [Ollama & Granite Setup Guide](OLLAMA_GRANITE.md) for more info on local AI models.
 
 ---
 

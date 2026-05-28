@@ -16,12 +16,21 @@ Chronos F1 uses **IBM Granite** via **local Ollama** for AI commentary generatio
    ollama --version
    ```
 
-## Installing the Granite Model
-By default, the project is configured to use `granite3.3:2b` or `granite3.3:1b`. You can pull the required model using Ollama:
-```bash
-ollama run granite3.3:2b
-```
-*(Or use whichever Granite model variant you prefer)*
+## Installing and Running the Granite Model
+
+We provide handy scripts in the `scripts/` folder to automatically pull and run the IBM Granite model. **Important: Always run these scripts in a separate terminal window** so they don't block the main application.
+
+- **Windows:** Run `scripts\Granite.bat`
+- **Linux/macOS:** Run `scripts/Granite.sh`
+
+### Tips
+- **What it does:** The script will automatically check if Ollama is installed, then pull and run the `granite3.3:2b` model.
+- **Separate Terminal:** Keep the terminal running the script open while you use Chronos F1. If you close it, the model will stop running.
+- **Manual Command:** Alternatively, you can pull the required model manually using:
+  ```bash
+  ollama run granite3.3:2b
+  ```
+  *(Or use whichever Granite model variant you prefer)*
 
 ## Changing the Project Level Model Name
 If you want to use a different model, you can change it in the project's `.env` file.

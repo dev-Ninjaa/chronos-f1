@@ -8,7 +8,25 @@
 - **Modern browser** (Chrome, Edge, Firefox)
 - **Ollama** installed locally (for AI commentary) - see [OLLAMA_GRANITE.md](OLLAMA_GRANITE.md)
 
-## Quick Start (5 Minutes)
+## Automated Setup (Using Scripts)
+
+For the easiest setup experience, we have provided automated scripts in the `scripts/` folder. **Important: Each script should be run in its own separate terminal** to avoid blocking other processes.
+
+### 1. Environment Setup (`scripts/env.bat` or `scripts/env.sh`)
+- **What it does:** Copies `.env.example` to `.env` if it doesn't exist, preparing your environment variables.
+- **Tip:** Run this first. Then, open the `.env` file to ensure the configuration matches your setup.
+
+### 2. Start Langflow (`scripts/langflow.bat` or `scripts/langflow.sh`)
+- **What it does:** Installs Langflow and starts the Langflow server (typically on port 7860).
+- **Tip:** Run this in a **separate terminal** and leave it running. It's required for workflow orchestration.
+
+### 3. Start the Web App (`scripts/start.bat` or `scripts/start.sh`)
+- **What it does:** Sets up the Python virtual environment using `uv`, installs requirements, and starts the Flask web application.
+- **Tip:** Run this in a **separate terminal**. Once started, access the app at `http://127.0.0.1:5000`.
+
+**Note:** You also need to run the IBM Granite model. See [OLLAMA_GRANITE.md](OLLAMA_GRANITE.md) for the `Granite.bat` / `Granite.sh` scripts, which should also be run in a separate terminal.
+
+## Manual Quick Start (5 Minutes)
 
 ### Option 1: Using UV (Recommended - Faster)
 
