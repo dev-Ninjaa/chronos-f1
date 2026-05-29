@@ -37,6 +37,7 @@ class ChronosF1Enhanced {
         this.trackScale = 1;
         this.trackOffsetX = 0;
         this.trackOffsetY = 0;
+        this.rotateTrack = false;
         
         this.init();
     }
@@ -182,6 +183,20 @@ class ChronosF1Enhanced {
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
         this.canvas.addEventListener('contextmenu', (e) => this.handleCanvasClick(e));
         window.addEventListener('resize', () => this.resizeCanvas());
+
+        const rotateBtn = document.getElementById('toggleRotate');
+        if (rotateBtn) {
+            rotateBtn.addEventListener('click', () => {
+                this.rotateTrack = !this.rotateTrack;
+                rotateBtn.classList.toggle('active');
+                this.drawFrame();
+            });
+        }
+    }
+
+    getTransformedPoint(px, py) {
+        if (!this.rotateTrack) return { x: px, y: py };
+        return { x: py, y: -px };
     }
 
     handleCanvasClick(e) {
@@ -198,8 +213,9 @@ class ChronosF1Enhanced {
         let bestDist = Infinity;
         for (const [code, data] of Object.entries(this.currentTelemetry.frame.drivers)) {
             if (data.x === undefined || data.y === undefined) continue;
-            const x = data.x * this.trackScale + this.trackOffsetX;
-            const y = data.y * this.trackScale + this.trackOffsetY;
+            const pt = this.getTransformedPoint(data.x, data.y);
+            const x = pt.x * this.trackScale + this.trackOffsetX;
+            const y = pt.y * this.trackScale + this.trackOffsetY;
             const d = Math.hypot(x - clickX, y - clickY);
             if (d < bestDist) {
                 bestDist = d;
@@ -1077,9 +1093,15 @@ class ChronosF1Enhanced {
     
     updateRaceControl(messages) {
         const feed = document.getElementById('raceControlFeed');
+        if (!feed) return;
         
         // Only show last 5 messages
         const recentMessages = messages.slice(-5);
+        
+        // Prevent flickering by only updating if messages changed
+        const msgHash = JSON.stringify(recentMessages);
+        if (feed.dataset.lastHash === msgHash) return;
+        feed.dataset.lastHash = msgHash;
         
         feed.innerHTML = '';
         recentMessages.forEach(msg => {
@@ -1149,8 +1171,9 @@ class ChronosF1Enhanced {
     }
 
     drawGhost(pos) {
-        const x = pos.x * this.trackScale + this.trackOffsetX;
-        const y = pos.y * this.trackScale + this.trackOffsetY;
+        const pt = this.getTransformedPoint(pos.x, pos.y);
+        const x = pt.x * this.trackScale + this.trackOffsetX;
+        const y = pt.y * this.trackScale + this.trackOffsetY;
 
         this.ctx.fillStyle = 'rgba(0, 255, 255, 0.25)';
         this.ctx.beginPath();
@@ -1199,10 +1222,15 @@ class ChronosF1Enhanced {
         
         // Calculate scale
         const padding = 50;
-        const xMin = Math.min(...track.x);
-        const xMax = Math.max(...track.x);
-        const yMin = Math.min(...track.y);
-        const yMax = Math.max(...track.y);
+        let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
+        
+        for (let i = 0; i < track.x.length; i++) {
+            const pt = this.getTransformedPoint(track.x[i], track.y[i]);
+            if (pt.x < xMin) xMin = pt.x;
+            if (pt.x > xMax) xMax = pt.x;
+            if (pt.y < yMin) yMin = pt.y;
+            if (pt.y > yMax) yMax = pt.y;
+        }
         
         const trackWidth = xMax - xMin;
         const trackHeight = yMax - yMin;
@@ -1213,6 +1241,7 @@ class ChronosF1Enhanced {
         
         this.trackOffsetX = padding - xMin * this.trackScale + (this.canvas.width - trackWidth * this.trackScale) / 2;
         this.trackOffsetY = padding - yMin * this.trackScale + (this.canvas.height - trackHeight * this.trackScale) / 2;
+        // this.trackOffsetY -= 5;
         
         // Draw track outline
         this.ctx.strokeStyle = '#444';
@@ -1220,8 +1249,9 @@ class ChronosF1Enhanced {
         this.ctx.beginPath();
         
         for (let i = 0; i < track.x.length; i++) {
-            const x = track.x[i] * this.trackScale + this.trackOffsetX;
-            const y = track.y[i] * this.trackScale + this.trackOffsetY;
+            const pt = this.getTransformedPoint(track.x[i], track.y[i]);
+            const x = pt.x * this.trackScale + this.trackOffsetX;
+            const y = pt.y * this.trackScale + this.trackOffsetY;
             
             if (i === 0) {
                 this.ctx.moveTo(x, y);
@@ -1241,8 +1271,9 @@ class ChronosF1Enhanced {
             // Inner bound
             this.ctx.beginPath();
             for (let i = 0; i < track.innerX.length; i++) {
-                const x = track.innerX[i] * this.trackScale + this.trackOffsetX;
-                const y = track.innerY[i] * this.trackScale + this.trackOffsetY;
+                const pt = this.getTransformedPoint(track.innerX[i], track.innerY[i]);
+                const x = pt.x * this.trackScale + this.trackOffsetX;
+                const y = pt.y * this.trackScale + this.trackOffsetY;
                 if (i === 0) this.ctx.moveTo(x, y);
                 else this.ctx.lineTo(x, y);
             }
@@ -1251,8 +1282,9 @@ class ChronosF1Enhanced {
             // Outer bound
             this.ctx.beginPath();
             for (let i = 0; i < track.outerX.length; i++) {
-                const x = track.outerX[i] * this.trackScale + this.trackOffsetX;
-                const y = track.outerY[i] * this.trackScale + this.trackOffsetY;
+                const pt = this.getTransformedPoint(track.outerX[i], track.outerY[i]);
+                const x = pt.x * this.trackScale + this.trackOffsetX;
+                const y = pt.y * this.trackScale + this.trackOffsetY;
                 if (i === 0) this.ctx.moveTo(x, y);
                 else this.ctx.lineTo(x, y);
             }
@@ -1274,8 +1306,9 @@ class ChronosF1Enhanced {
             
             this.ctx.beginPath();
             for (let i = startIdx; i <= endIdx && i < track.x.length; i++) {
-                const x = track.x[i] * this.trackScale + this.trackOffsetX;
-                const y = track.y[i] * this.trackScale + this.trackOffsetY;
+                const pt = this.getTransformedPoint(track.x[i], track.y[i]);
+                const x = pt.x * this.trackScale + this.trackOffsetX;
+                const y = pt.y * this.trackScale + this.trackOffsetY;
                 if (i === startIdx) this.ctx.moveTo(x, y);
                 else this.ctx.lineTo(x, y);
             }
@@ -1285,8 +1318,9 @@ class ChronosF1Enhanced {
     
     drawFinishLine() {
         const finish = this.currentTelemetry.trackData.finishLine;
-        const x = finish.x * this.trackScale + this.trackOffsetX;
-        const y = finish.y * this.trackScale + this.trackOffsetY;
+        const pt = this.getTransformedPoint(finish.x, finish.y);
+        const x = pt.x * this.trackScale + this.trackOffsetX;
+        const y = pt.y * this.trackScale + this.trackOffsetY;
         
         this.ctx.strokeStyle = '#ffffff';
         this.ctx.lineWidth = 4;
@@ -1299,8 +1333,9 @@ class ChronosF1Enhanced {
     }
     
     drawSafetyCar(scData) {
-        const x = scData.x * this.trackScale + this.trackOffsetX;
-        const y = scData.y * this.trackScale + this.trackOffsetY;
+        const pt = this.getTransformedPoint(scData.x, scData.y);
+        const x = pt.x * this.trackScale + this.trackOffsetX;
+        const y = pt.y * this.trackScale + this.trackOffsetY;
         const alpha = scData.alpha;
         
         // Glow effect
@@ -1326,8 +1361,9 @@ class ChronosF1Enhanced {
     }
     
     drawCar(worldX, worldY, code, data) {
-        const x = worldX * this.trackScale + this.trackOffsetX;
-        const y = worldY * this.trackScale + this.trackOffsetY;
+        const pt = this.getTransformedPoint(worldX, worldY);
+        const x = pt.x * this.trackScale + this.trackOffsetX;
+        const y = pt.y * this.trackScale + this.trackOffsetY;
         
         const color = this.getDriverColor(code);
         const isSelected = this.selectedDrivers.includes(code);
@@ -1794,6 +1830,15 @@ function displayRegulationContext(data) {
     // Clear existing content
     regulationsDisplay.innerHTML = '';
     
+    // Helper for basic markdown
+    const parseMD = (text) => {
+        if (!text) return '';
+        return text
+            .replace(/###\s*(.*?)(?=\n|$)/g, '<strong>$1</strong><br/>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br/>');
+    };
+
     // Add each regulation
     data.regulations.forEach(reg => {
         const regItem = document.createElement('div');
@@ -1801,7 +1846,7 @@ function displayRegulationContext(data) {
         
         regItem.innerHTML = `
             <div class="regulation-title">${reg.title}</div>
-            <div class="regulation-content">${reg.content}</div>
+            <div class="regulation-content">${parseMD(reg.content)}</div>
             <div class="regulation-timestamp">${formatTime(data.timestamp)}</div>
         `;
         
