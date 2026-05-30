@@ -17,7 +17,8 @@
             <div class="bg-overlay"></div>
         </div>
 
-        <header class="game-header">
+        <!-- Unified Top Game Navigation -->
+        <nav class="game-top-nav">
             <div class="header-brand">
                 <div class="brand-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -25,32 +26,98 @@
                 <h1>CHRONOS <span class="highlight">F1</span></h1>
             </div>
 
-            <!-- Session Info is now integrated into header center -->
-            <div id="sessionInfo" class="header-session" style="display: none;">
-                <div class="session-status">
-                    <span id="trackStatus" class="track-status">GREEN</span>
-                </div>
-                <div class="session-details">
-                    <div class="session-time">
-                        <span id="sessionTime">00:00:00</span>
+            <div class="nav-links">
+                <!-- Ghost Toggle inside Nav to feel like game menu -->
+                <div id="ghostSection" class="nav-item" style="display: none;">
+                    <button class="game-nav-btn" onclick="toggleGhost(!ghostEnabled); document.getElementById('ghostPanel').style.display = ghostEnabled ? 'block' : 'none'">
+                        <span class="icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></svg>
+                        </span>
+                        <span id="ghostToggleText">GHOST</span>
+                    </button>
+                    <div id="ghostPanel" class="ghost-tooltip glass-panel" style="display: none;">
+                        <div class="ghost-stats-row">
+                            <div class="ghost-stat-item">
+                                <div class="ghost-stat-label">Lap Delta</div>
+                                <div id="lapDelta" class="delta-value">+0.000</div>
+                            </div>
+                            <div class="ghost-stat-item">
+                                <div class="ghost-stat-label">Speed Δ</div>
+                                <div id="speedDelta">0 km/h</div>
+                            </div>
+                        </div>
+                        <div class="ghost-sectors">
+                            <div class="ghost-stat-label">Sector Deltas</div>
+                            <div class="ghost-sectors-grid">
+                                <div class="ghost-sector-cell"><div class="ghost-sector-label">S1</div><div id="sector1Delta" class="delta-value">-</div></div>
+                                <div class="ghost-sector-cell"><div class="ghost-sector-label">S2</div><div id="sector2Delta" class="delta-value">-</div></div>
+                                <div class="ghost-sector-cell"><div class="ghost-sector-label">S3</div><div id="sector3Delta" class="delta-value">-</div></div>
+                            </div>
+                        </div>
+                        <div class="ghost-reference">
+                            <div class="ghost-stat-label">Reference</div>
+                            <div id="ghostRef">Fastest Lap</div>
+                        </div>
                     </div>
-                    <div class="session-lap">
-                        LAP <span id="sessionLap">1</span> / <span id="sessionTotalLaps">0</span>
-                    </div>
                 </div>
-                <div class="session-leader">
-                    P1: <span id="sessionLeader">-</span>
+
+                <!-- Debrief Button -->
+                <div id="debriefSection" class="nav-item" style="display: none;">
+                    <button class="game-nav-btn accent" onclick="requestRaceDebrief()">
+                        <span class="icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        </span>
+                        <span>RACE DEBRIEF</span>
+                    </button>
                 </div>
+                
+                <button class="game-nav-btn" onclick="document.querySelector('.hud-left').classList.toggle('hidden')">
+                    <span class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    </span>
+                    <span>HUB</span>
+                </button>
+                <button class="game-nav-btn" onclick="document.querySelector('.hud-right').classList.toggle('hidden')">
+                    <span class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10"/><path d="M5 4h2v7H5z"/><path d="M17 4h2v7h-2z"/><path d="M7 11v3a5 5 0 0 0 10 0v-3"/></svg>
+                    </span>
+                    <span>STANDINGS</span>
+                </button>
+                <button class="game-nav-btn" onclick="document.getElementById('strategyInsightsSection').style.display='block'">
+                    <span class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    </span>
+                    <span>STRATEGY</span>
+                </button>
+                <button class="game-nav-btn" onclick="document.getElementById('regulationsSection').style.display='block'">
+                    <span class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    </span>
+                    <span>RULES</span>
+                </button>
             </div>
 
             <div class="header-controls">
-                <div id="aiIndicator" class="ai-indicator">🤖 AI: OFF</div>
+                <div class="status-btn-group" style="display: flex; gap: 10px;">
+                    <div class="game-nav-btn sm" id="aiIndicatorBtn">
+                        <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg></span>
+                        <span id="aiStatusText">AI: OFF</span>
+                    </div>
+                    <div class="game-nav-btn sm" id="regsIndicatorBtn" style="display: none;">
+                        <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+                        <span>REGS</span>
+                    </div>
+                    <div class="game-nav-btn sm" id="workflowIndicatorBtn" style="display: none;">
+                        <span class="icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span>
+                        <span>WORKFLOWS</span>
+                    </div>
+                </div>
                 <div class="connection-status" id="connectionStatus">
                     <span class="status-dot"></span>
                     <span class="status-text">Disconnected</span>
                 </div>
             </div>
-        </header>
+        </nav>
 
         <main class="game-main">
             
@@ -87,13 +154,23 @@
                     </div>
                 </div>
 
+                <div class="hud-panel glass-panel" id="sessionInfo" style="display: none;">
+                    <div class="panel-header"><h2>SESSION STATUS</h2></div>
+                    <div class="panel-body info-grid">
+                        <div class="info-item"><span class="label">Status</span><span id="trackStatus" class="track-status" style="font-size: 1rem; border: none; padding: 0;">GREEN</span></div>
+                        <div class="info-item"><span class="label">Time</span><span id="sessionTime">00:00:00</span></div>
+                        <div class="info-item"><span class="label">Lap</span><span><span id="sessionLap">1</span> / <span id="sessionTotalLaps">0</span></span></div>
+                        <div class="info-item"><span class="label">Leader</span><span>P1: <span id="sessionLeader">-</span></span></div>
+                    </div>
+                </div>
+
                 <div class="hud-panel glass-panel" id="weatherSection" style="display: none;">
                     <div class="panel-header"><h2>TRACK CONDITIONS</h2></div>
                     <div class="panel-body weather-grid">
-                        <div class="weather-item"><span class="icon">🌡️</span><div><span class="label">Track</span><span id="trackTemp">-</span></div></div>
-                        <div class="weather-item"><span class="icon">🌡️</span><div><span class="label">Air</span><span id="airTemp">-</span></div></div>
-                        <div class="weather-item"><span class="icon">💧</span><div><span class="label">Humidity</span><span id="humidity">-</span></div></div>
-                        <div class="weather-item"><span class="icon">💨</span><div><span class="label">Wind</span><span id="wind">-</span></div></div>
+                        <div class="weather-item"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span><div><span class="label">Track</span><span id="trackTemp">-</span></div></div>
+                        <div class="weather-item"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span><div><span class="label">Air</span><span id="airTemp">-</span></div></div>
+                        <div class="weather-item"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg></span><div><span class="label">Humidity</span><span id="humidity">-</span></div></div>
+                        <div class="weather-item"><span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg></span><div><span class="label">Wind</span><span id="wind">-</span></div></div>
                     </div>
                 </div>
 
@@ -104,7 +181,7 @@
                             <button id="fanModeBtn" class="game-btn sm active" onclick="setCommentaryMode('fan')">FAN</button>
                             <button id="engineerModeBtn" class="game-btn sm" onclick="setCommentaryMode('engineer')">ENGINEER</button>
                             <button id="ttsToggle" class="game-btn sm active" onclick="toggleTTS()">
-                                🔊 <span id="ttsToggleText">VOICE ON</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> <span id="ttsToggleText">VOICE ON</span>
                             </button>
                         </div>
                         <div id="aiCommentary" class="ai-commentary-box"></div>
@@ -125,6 +202,7 @@
                     <canvas id="trackCanvas" style="display: none;"></canvas>
                 </div>
                 
+                <!-- Session Info moved to hud-left -->
                 <div id="controls" class="game-controls glass-panel" style="display: none;">
                     <div class="controls-left">
                         <button id="restartBtn" class="control-btn" title="Restart">⏮</button>
@@ -147,33 +225,46 @@
                             <option value="4">4x</option>
                             <option value="8">8x</option>
                         </select>
-                        <button id="toggleRotate" class="control-btn sm" title="Rotate Track 90°">🔄</button>
+                        <button id="toggleRotate" class="control-btn sm" title="Rotate Track 90°"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg></button>
                         <button id="toggleDrs" class="control-btn sm active" title="Toggle DRS Zones">DRS</button>
-                        <button id="toggleWeather" class="control-btn sm active" title="Toggle Weather">☁️</button>
+                        <button id="toggleWeather" class="control-btn sm active" title="Toggle Weather"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19C19.9853 19 22 16.9853 22 14.5C22 12.1444 20.1989 10.2157 17.9048 10.026C17.433 7.1856 14.9818 5 12 5C8.68629 5 6 7.68629 6 11C6 11.0827 6.00168 11.1649 6.00502 11.2467C3.17865 11.6425 1 14.072 1 17C1 20.3137 3.68629 23 7 23H17.5C18.6046 23 19.5 22.1046 19.5 21C19.5 19.8954 18.6046 19 17.5 19Z"/></svg></button>
                     </div>
                 </div>
             </div>
 
             <div class="hud-right">
-                <div class="hud-panel glass-panel leaderboard-panel" id="leaderboardSection" style="display: none;">
-                    <div class="panel-header">
+                <div class="hud-panel glass-panel collapsed" id="leaderboardSection" style="display: none;">
+                    <div class="panel-header accordion-header" onclick="this.parentElement.classList.toggle('collapsed')">
                         <h2>LIVE STANDINGS</h2>
-                        <div class="gap-toggles">
+                        <div class="gap-toggles" onclick="event.stopPropagation()">
                             <button id="gapLeaderBtn" class="game-btn xs" title="Gap to Leader">L</button>
                             <button id="gapIntervalBtn" class="game-btn xs active" title="Interval Gap">I</button>
                         </div>
+                        <span class="collapse-icon">▼</span>
                     </div>
-                    <div id="leaderboard" class="leaderboard"></div>
+                    <div class="panel-collapse">
+                        <div id="leaderboard" class="leaderboard scrollable"></div>
+                    </div>
                 </div>
                 
-                <div class="hud-panel glass-panel" id="tyreStrategySection" style="display: none;">
-                    <div class="panel-header"><h2>TYRE STRATEGY</h2></div>
-                    <div id="tyreStrategyPanel" class="tyre-strategy-panel"></div>
+                <div class="hud-panel glass-panel collapsed" id="tyreStrategySection" style="display: none;">
+                    <div class="panel-header accordion-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <h2>TYRE STRATEGY</h2>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="panel-collapse">
+                        <div id="tyreStrategyPanel" class="tyre-strategy-panel scrollable"></div>
+                    </div>
                 </div>
 
-                <div class="hud-panel glass-panel" id="raceControlSection" style="display: none;">
-                    <div class="panel-header"><h2>RACE CONTROL</h2></div>
-                    <div id="raceControlFeed" class="race-control-feed"></div>
+                <div class="hud-panel glass-panel collapsed" id="raceControlSection" style="display: none;">
+                    <div class="panel-header accordion-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <h2>RACE CONTROL</h2>
+                        <span class="collapse-icon">▼</span>
+                    </div>
+                    <div class="panel-collapse">
+                        <div id="raceControlFeed" class="race-control-feed scrollable"></div>
+                    </div>
                 </div>
             </div>
             
@@ -234,65 +325,7 @@
             <div class="telemetry-stats" id="telemetryStats"></div>
         </div>
 
-        <!-- Bottom Game Navigation (Floating Controls) -->
-        <nav class="game-bottom-nav">
-            <!-- Ghost Toggle inside Nav to feel like game menu -->
-            <div id="ghostSection" class="nav-item" style="display: none;">
-                <button class="game-nav-btn" onclick="toggleGhost(!ghostEnabled); document.getElementById('ghostPanel').style.display = ghostEnabled ? 'block' : 'none'">
-                    <span class="icon">👻</span>
-                    <span id="ghostToggleText">GHOST</span>
-                </button>
-                <div id="ghostPanel" class="ghost-tooltip glass-panel" style="display: none;">
-                    <div class="ghost-stats-row">
-                        <div class="ghost-stat-item">
-                            <div class="ghost-stat-label">Lap Delta</div>
-                            <div id="lapDelta" class="delta-value">+0.000</div>
-                        </div>
-                        <div class="ghost-stat-item">
-                            <div class="ghost-stat-label">Speed Δ</div>
-                            <div id="speedDelta">0 km/h</div>
-                        </div>
-                    </div>
-                    <div class="ghost-sectors">
-                        <div class="ghost-stat-label">Sector Deltas</div>
-                        <div class="ghost-sectors-grid">
-                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S1</div><div id="sector1Delta" class="delta-value">-</div></div>
-                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S2</div><div id="sector2Delta" class="delta-value">-</div></div>
-                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S3</div><div id="sector3Delta" class="delta-value">-</div></div>
-                        </div>
-                    </div>
-                    <div class="ghost-reference">
-                        <div class="ghost-stat-label">Reference</div>
-                        <div id="ghostRef">Fastest Lap</div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Debrief Button -->
-            <div id="debriefSection" class="nav-item" style="display: none;">
-                <button class="game-nav-btn accent" onclick="requestRaceDebrief()">
-                    <span class="icon">📊</span>
-                    <span>RACE DEBRIEF</span>
-                </button>
-            </div>
-            
-            <button class="game-nav-btn" onclick="document.querySelector('.hud-left').classList.toggle('hidden')">
-                <span class="icon">📋</span>
-                <span>HUB</span>
-            </button>
-            <button class="game-nav-btn" onclick="document.querySelector('.hud-right').classList.toggle('hidden')">
-                <span class="icon">🏆</span>
-                <span>STANDINGS</span>
-            </button>
-            <button class="game-nav-btn" onclick="document.getElementById('strategyInsightsSection').style.display='block'">
-                <span class="icon">🧠</span>
-                <span>STRATEGY</span>
-            </button>
-            <button class="game-nav-btn" onclick="document.getElementById('regulationsSection').style.display='block'">
-                <span class="icon">📚</span>
-                <span>RULES</span>
-            </button>
-        </nav>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>

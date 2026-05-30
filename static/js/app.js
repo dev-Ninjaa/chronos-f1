@@ -325,20 +325,31 @@ class ChronosF1Enhanced {
     }
     
     updateAIStatus(data) {
-        const aiIndicator = document.getElementById('aiIndicator');
-        if (!aiIndicator) return;
+        const aiIndicatorBtn = document.getElementById('aiIndicatorBtn');
+        const aiStatusText = document.getElementById('aiStatusText');
+        const regsIndicatorBtn = document.getElementById('regsIndicatorBtn');
+        const workflowIndicatorBtn = document.getElementById('workflowIndicatorBtn');
         
-        let statusText = '🤖 AI: ';
+        if (!aiIndicatorBtn) return;
+        
         if (data.enabled) {
-            statusText += 'ON';
-            if (data.docling) statusText += ' | 📚 Regs';
-            if (data.langflow) statusText += ' | 🔄 Workflows';
-            aiIndicator.style.color = '#4ade80';
+            aiStatusText.textContent = 'AI: ON';
+            aiIndicatorBtn.classList.add('ai-accent');
+            
+            if (data.docling && regsIndicatorBtn) {
+                regsIndicatorBtn.style.display = 'flex';
+                regsIndicatorBtn.classList.add('accent');
+            }
+            if (data.langflow && workflowIndicatorBtn) {
+                workflowIndicatorBtn.style.display = 'flex';
+                workflowIndicatorBtn.classList.add('accent');
+            }
         } else {
-            statusText += 'OFF';
-            aiIndicator.style.color = '#94a3b8';
+            aiStatusText.textContent = 'AI: OFF';
+            aiIndicatorBtn.classList.remove('ai-accent');
+            if (regsIndicatorBtn) regsIndicatorBtn.style.display = 'none';
+            if (workflowIndicatorBtn) workflowIndicatorBtn.style.display = 'none';
         }
-        aiIndicator.textContent = statusText;
         
         // Show strategy insights section if Langflow is enabled
         if (data.langflow) {
@@ -1243,9 +1254,11 @@ class ChronosF1Enhanced {
         this.trackOffsetY = padding - yMin * this.trackScale + (this.canvas.height - trackHeight * this.trackScale) / 2;
         // this.trackOffsetY -= 5;
         
-        // Draw track outline
-        this.ctx.strokeStyle = '#444';
-        this.ctx.lineWidth = 3;
+        // Draw thick outer track base
+        this.ctx.strokeStyle = '#222'; // Dark asphalt color
+        this.ctx.lineWidth = 14;
+        this.ctx.lineJoin = 'round';
+        this.ctx.lineCap = 'round';
         this.ctx.beginPath();
         
         for (let i = 0; i < track.x.length; i++) {
@@ -1262,34 +1275,25 @@ class ChronosF1Enhanced {
         
         this.ctx.closePath();
         this.ctx.stroke();
+
+        // Draw track edges (two solid lines)
+        this.ctx.strokeStyle = '#555';
+        this.ctx.lineWidth = 16;
+        this.ctx.stroke();
         
-        // Draw inner/outer bounds if available
-        if (track.innerX && track.outerX) {
-            this.ctx.strokeStyle = '#333';
-            this.ctx.lineWidth = 1;
-            
-            // Inner bound
-            this.ctx.beginPath();
-            for (let i = 0; i < track.innerX.length; i++) {
-                const pt = this.getTransformedPoint(track.innerX[i], track.innerY[i]);
-                const x = pt.x * this.trackScale + this.trackOffsetX;
-                const y = pt.y * this.trackScale + this.trackOffsetY;
-                if (i === 0) this.ctx.moveTo(x, y);
-                else this.ctx.lineTo(x, y);
-            }
-            this.ctx.stroke();
-            
-            // Outer bound
-            this.ctx.beginPath();
-            for (let i = 0; i < track.outerX.length; i++) {
-                const pt = this.getTransformedPoint(track.outerX[i], track.outerY[i]);
-                const x = pt.x * this.trackScale + this.trackOffsetX;
-                const y = pt.y * this.trackScale + this.trackOffsetY;
-                if (i === 0) this.ctx.moveTo(x, y);
-                else this.ctx.lineTo(x, y);
-            }
-            this.ctx.stroke();
-        }
+        // Re-draw dark asphalt over the thicker line to create the "two lines" effect
+        this.ctx.strokeStyle = '#181818'; 
+        this.ctx.lineWidth = 12;
+        this.ctx.stroke();
+
+        // Draw the dashed center line
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.setLineDash([8, 12]);
+        this.ctx.stroke();
+        
+        // Reset line dash for other drawings
+        this.ctx.setLineDash([]);
     }
     
     drawDrsZones() {
@@ -1379,23 +1383,24 @@ class ChronosF1Enhanced {
         this.ctx.lineWidth = isSelected ? 3 : 1;
         this.ctx.stroke();
         
-        // Always draw driver code above car
+        // Always draw driver code
         this.ctx.fillStyle = '#ffffff';
         this.ctx.strokeStyle = '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.font = 'bold 11px Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'bottom';
+        this.ctx.textBaseline = 'middle';
+        
+        // Use position to alternate label sides to prevent overlapping names
+        const positionNum = parseInt(data.position) || 0;
+        const isEven = positionNum % 2 === 0;
+        const xOffset = isEven ? 14 : -14;
+        this.ctx.textAlign = isEven ? 'left' : 'right';
+        
+        const labelText = `${data.position}. ${code}`;
         
         // Draw text with outline for better visibility
-        this.ctx.strokeText(code, x, y - 12);
-        this.ctx.fillText(code, x, y - 12);
-        
-        // Draw position number below car
-        this.ctx.font = 'bold 10px Arial';
-        this.ctx.textBaseline = 'top';
-        this.ctx.strokeText(data.position.toString(), x, y + 12);
-        this.ctx.fillText(data.position.toString(), x, y + 12);
+        this.ctx.strokeText(labelText, x + xOffset, y);
+        this.ctx.fillText(labelText, x + xOffset, y);
         
         // Draw pit indicator if in pit
         if (data.inPit) {
