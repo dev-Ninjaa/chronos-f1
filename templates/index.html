@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chronos F1 — Race Replay</title>
-    <meta name="description" content="Chronos F1 Enhanced Race Replay – relive every lap with real-time telemetry, AI commentary, and strategy insights.">
+    <title>Chronos F1 — Race Hub</title>
+    <meta name="description" content="Chronos F1 Enhanced Race Replay">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div id="app">
-        <!-- Header -->
-        <header class="header">
+    <div id="app" class="game-ui">
+        <div class="game-bg">
+            <img src="{{ url_for('static', filename='images/bg.png') }}" alt="Garage Background">
+            <div class="bg-overlay"></div>
+        </div>
+
+        <header class="game-header">
             <div class="header-brand">
                 <div class="brand-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
-                <h1>Chronos <span>F1</span></h1>
+                <h1>CHRONOS <span class="highlight">F1</span></h1>
             </div>
+
+            <!-- Session Info is now integrated into header center -->
+            <div id="sessionInfo" class="header-session" style="display: none;">
+                <div class="session-status">
+                    <span id="trackStatus" class="track-status">GREEN</span>
+                </div>
+                <div class="session-details">
+                    <div class="session-time">
+                        <span id="sessionTime">00:00:00</span>
+                    </div>
+                    <div class="session-lap">
+                        LAP <span id="sessionLap">1</span> / <span id="sessionTotalLaps">0</span>
+                    </div>
+                </div>
+                <div class="session-leader">
+                    P1: <span id="sessionLeader">-</span>
+                </div>
+            </div>
+
             <div class="header-controls">
                 <div id="aiIndicator" class="ai-indicator">🤖 AI: OFF</div>
                 <div class="connection-status" id="connectionStatus">
@@ -29,252 +52,94 @@
             </div>
         </header>
 
-        <!-- Main Content — Three Column Layout -->
-        <div class="main-content">
-
-            <!-- LEFT PANEL — Setup & Info -->
-            <aside class="panel panel-left">
-                <div class="panel-scroll">
-
-                    <!-- Race Selection -->
-                    <div class="section" id="raceSelectionSection">
-                        <div class="section-header">
-                            <h2>Race Selection</h2>
-                        </div>
-                        <div class="section-body">
-                            <div class="form-group">
-                                <label for="seasonSelect">Season</label>
-                                <select id="seasonSelect" class="select-input">
-                                    <option value="">Select Season...</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="raceSelect">Race</label>
-                                <select id="raceSelect" class="select-input" disabled>
-                                    <option value="">Select Race...</option>
-                                </select>
-                            </div>
-                            <button id="loadRaceBtn" class="btn btn-primary" disabled>Load Race</button>
-                        </div>
+        <main class="game-main">
+            
+            <div class="hud-left">
+                <!-- Hub Menu Panels -->
+                <div class="hud-panel glass-panel" id="raceSelectionSection">
+                    <div class="panel-header">
+                        <h2>RACE HUB</h2>
                     </div>
-
-                    <!-- Race Info -->
-                    <div class="section" id="raceInfoSection" style="display: none;">
-                        <div class="section-header">
-                            <h2>Race Info</h2>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="seasonSelect">SEASON</label>
+                            <select id="seasonSelect" class="game-select">
+                                <option value="">Select Season...</option>
+                            </select>
                         </div>
-                        <div class="section-body">
-                            <div class="info-item">
-                                <span class="label">Event:</span>
-                                <span id="eventName">-</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Circuit:</span>
-                                <span id="circuitName">-</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Date:</span>
-                                <span id="raceDate">-</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">Total Laps:</span>
-                                <span id="totalLaps">-</span>
-                            </div>
+                        <div class="form-group">
+                            <label for="raceSelect">GRAND PRIX</label>
+                            <select id="raceSelect" class="game-select" disabled>
+                                <option value="">Select Race...</option>
+                            </select>
                         </div>
+                        <button id="loadRaceBtn" class="game-btn primary" disabled>ENTER EVENT</button>
                     </div>
-
-                    <!-- Weather -->
-                    <div class="section" id="weatherSection" style="display: none;">
-                        <div class="section-header">
-                            <h2>Weather</h2>
-                        </div>
-                        <div class="section-body">
-                            <div class="weather-grid">
-                                <div class="weather-item">
-                                    <span class="weather-icon">🌡️</span>
-                                    <div>
-                                        <div class="weather-label">Track</div>
-                                        <div class="weather-value" id="trackTemp">-</div>
-                                    </div>
-                                </div>
-                                <div class="weather-item">
-                                    <span class="weather-icon">🌡️</span>
-                                    <div>
-                                        <div class="weather-label">Air</div>
-                                        <div class="weather-value" id="airTemp">-</div>
-                                    </div>
-                                </div>
-                                <div class="weather-item">
-                                    <span class="weather-icon">💧</span>
-                                    <div>
-                                        <div class="weather-label">Humidity</div>
-                                        <div class="weather-value" id="humidity">-</div>
-                                    </div>
-                                </div>
-                                <div class="weather-item">
-                                    <span class="weather-icon">💨</span>
-                                    <div>
-                                        <div class="weather-label">Wind</div>
-                                        <div class="weather-value" id="wind">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AI Commentary -->
-                    <div class="section" id="aiCommentarySection" style="display: none;">
-                        <div class="section-header">
-                            <h2>🎙️ AI Commentary</h2>
-                        </div>
-                        <div class="section-body">
-                            <!-- Commentary Mode Toggle -->
-                            <div class="commentary-mode-toggle">
-                                <button id="fanModeBtn" class="mode-btn active" onclick="setCommentaryMode('fan')">
-                                    👥 Fan
-                                </button>
-                                <button id="engineerModeBtn" class="mode-btn" onclick="setCommentaryMode('engineer')">
-                                    ⚙️ Engineer
-                                </button>
-                            </div>
-
-                            <!-- TTS Controls -->
-                            <div class="tts-controls">
-                                <button id="ttsToggle" class="tts-btn active" onclick="toggleTTS()">
-                                    🔊 <span id="ttsToggleText">Voice On</span>
-                                </button>
-                            </div>
-
-                            <div id="aiCommentary" class="ai-commentary-box"></div>
-                        </div>
-                    </div>
-
-                    <!-- Race Debrief Button -->
-                    <div class="section" id="debriefSection" style="display: none;">
-                        <button class="btn btn-primary" onclick="requestRaceDebrief()" style="width: 100%;">
-                            📊 Race Debrief
-                        </button>
-                    </div>
-
-                    <!-- Ghost Toggle -->
-                    <div class="section" id="ghostSection" style="display: none;">
-                        <button class="btn btn-ghost" onclick="toggleGhost(!ghostEnabled)" style="width: 100%;">
-                            👻 <span id="ghostToggleText">Enable Ghost</span>
-                        </button>
-                        <div id="ghostPanel" style="margin-top: 10px; display: none;">
-                            <div class="ghost-stats-row">
-                                <div class="ghost-stat-item">
-                                    <div class="ghost-stat-label">Lap Delta</div>
-                                    <div id="lapDelta" class="delta-value" style="font-weight: 700; font-size: 18px;">+0.000</div>
-                                </div>
-                                <div class="ghost-stat-item">
-                                    <div class="ghost-stat-label">Speed Δ</div>
-                                    <div id="speedDelta" style="font-weight: 700; font-size: 16px;">0 km/h</div>
-                                </div>
-                            </div>
-                            <div class="ghost-sectors">
-                                <div class="ghost-stat-label" style="margin-bottom: 5px;">Sector Deltas</div>
-                                <div class="ghost-sectors-grid">
-                                    <div class="ghost-sector-cell">
-                                        <div class="ghost-sector-label">S1</div>
-                                        <div id="sector1Delta" class="delta-value">-</div>
-                                    </div>
-                                    <div class="ghost-sector-cell">
-                                        <div class="ghost-sector-label">S2</div>
-                                        <div id="sector2Delta" class="delta-value">-</div>
-                                    </div>
-                                    <div class="ghost-sector-cell">
-                                        <div class="ghost-sector-label">S3</div>
-                                        <div id="sector3Delta" class="delta-value">-</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ghost-legend">
-                                <span style="color: #4ade80;">●</span> Gaining
-                                <span style="color: #fbbf24; margin-left: 8px;">●</span> Fastest
-                                <span style="color: #ef4444; margin-left: 8px;">●</span> Losing
-                            </div>
-                            <div class="ghost-reference">
-                                <div class="ghost-stat-label">Reference</div>
-                                <div id="ghostRef" style="font-weight: 600; font-size: 13px;">Fastest Lap</div>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
-            </aside>
 
-            <!-- CENTER — Track Viewer -->
-            <main class="viewer">
+                <div class="hud-panel glass-panel" id="raceInfoSection" style="display: none;">
+                    <div class="panel-header"><h2>EVENT DETAILS</h2></div>
+                    <div class="panel-body info-grid">
+                        <div class="info-item"><span class="label">Event</span><span id="eventName">-</span></div>
+                        <div class="info-item"><span class="label">Circuit</span><span id="circuitName">-</span></div>
+                        <div class="info-item"><span class="label">Date</span><span id="raceDate">-</span></div>
+                        <div class="info-item"><span class="label">Laps</span><span id="totalLaps">-</span></div>
+                    </div>
+                </div>
+
+                <div class="hud-panel glass-panel" id="weatherSection" style="display: none;">
+                    <div class="panel-header"><h2>TRACK CONDITIONS</h2></div>
+                    <div class="panel-body weather-grid">
+                        <div class="weather-item"><span class="icon">🌡️</span><div><span class="label">Track</span><span id="trackTemp">-</span></div></div>
+                        <div class="weather-item"><span class="icon">🌡️</span><div><span class="label">Air</span><span id="airTemp">-</span></div></div>
+                        <div class="weather-item"><span class="icon">💧</span><div><span class="label">Humidity</span><span id="humidity">-</span></div></div>
+                        <div class="weather-item"><span class="icon">💨</span><div><span class="label">Wind</span><span id="wind">-</span></div></div>
+                    </div>
+                </div>
+
+                <div class="hud-panel glass-panel" id="aiCommentarySection" style="display: none;">
+                    <div class="panel-header"><h2>AI RACE ENGINEER</h2></div>
+                    <div class="panel-body">
+                        <div class="commentary-mode-toggle">
+                            <button id="fanModeBtn" class="game-btn sm active" onclick="setCommentaryMode('fan')">FAN</button>
+                            <button id="engineerModeBtn" class="game-btn sm" onclick="setCommentaryMode('engineer')">ENGINEER</button>
+                            <button id="ttsToggle" class="game-btn sm active" onclick="toggleTTS()">
+                                🔊 <span id="ttsToggleText">VOICE ON</span>
+                            </button>
+                        </div>
+                        <div id="aiCommentary" class="ai-commentary-box"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="center-stage">
                 <div id="loadingScreen" class="loading-screen">
                     <div class="loading-content">
-                        <div class="loading-icon">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e10600" stroke-width="1.5"><circle cx="12" cy="12" r="10" opacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>
-                        </div>
-                        <h2>Select a race to begin</h2>
-                        <p>Choose a season and race from the sidebar</p>
+                        <h1>WELCOME TO CHRONOS</h1>
+                        <p>AWAITING EVENT SELECTION</p>
+                        <div class="loading-spinner"></div>
                     </div>
                 </div>
 
-                <canvas id="trackCanvas" style="display: none;"></canvas>
-
-                <!-- Telemetry Comparison Overlay -->
-                <div id="telemetryComparison" class="telemetry-comparison" style="display: none;">
-                    <div class="telemetry-header">
-                        <h3>📊 Driver Comparison</h3>
-                        <button class="close-comparison-btn" onclick="closeTelemetryComparison()">×</button>
-                    </div>
-                    <div class="telemetry-drivers" id="comparisonDrivers"></div>
-                    <div class="telemetry-charts-container">
-                        <div class="chart-section">
-                            <h4>Speed (km/h)</h4>
-                            <canvas id="speedChart" width="350" height="80"></canvas>
-                        </div>
-                        <div class="chart-section">
-                            <h4>Throttle (%)</h4>
-                            <canvas id="throttleChart" width="350" height="80"></canvas>
-                        </div>
-                        <div class="chart-section">
-                            <h4>Brake</h4>
-                            <canvas id="brakeChart" width="350" height="80"></canvas>
-                        </div>
-                        <div class="chart-section">
-                            <h4>Gear</h4>
-                            <canvas id="gearChart" width="350" height="60"></canvas>
-                        </div>
-                    </div>
-                    <div class="telemetry-stats" id="telemetryStats"></div>
+                <div class="canvas-wrapper">
+                    <canvas id="trackCanvas" style="display: none;"></canvas>
                 </div>
-
-                <!-- Session Info Overlay -->
-                <div id="sessionInfo" class="session-info" style="display: none;">
-                    <div class="session-time">
-                        <span class="label">Time:</span>
-                        <span id="sessionTime">00:00:00</span>
+                
+                <div id="controls" class="game-controls glass-panel" style="display: none;">
+                    <div class="controls-left">
+                        <button id="restartBtn" class="control-btn" title="Restart">⏮</button>
+                        <button id="playPauseBtn" class="control-btn play-btn" title="Play/Pause">▶</button>
                     </div>
-                    <div class="session-lap">
-                        <span class="label">Lap:</span>
-                        <span id="sessionLap">1</span>
-                        <span>/</span>
-                        <span id="sessionTotalLaps">0</span>
+                    <div class="controls-center">
+                        <div class="progress-bar">
+                            <input type="range" id="progressSlider" min="0" max="0" value="0" step="1" class="slider">
+                            <div class="progress-info">
+                                <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="session-leader">
-                        <span class="label">Leader:</span>
-                        <span id="sessionLeader">-</span>
-                    </div>
-                    <div class="session-status">
-                        <span class="label">Status:</span>
-                        <span id="trackStatus" class="track-status">GREEN</span>
-                    </div>
-                </div>
-
-                <!-- Controls -->
-                <div id="controls" class="controls" style="display: none;">
-                    <button id="restartBtn" class="control-btn" title="Restart">⏮</button>
-                    <button id="playPauseBtn" class="control-btn play-btn" title="Play/Pause">▶</button>
-                    <div class="speed-control">
-                        <label>Speed:</label>
-                        <select id="speedSelect" class="speed-select">
+                    <div class="controls-right">
+                        <select id="speedSelect" class="game-select sm">
                             <option value="0.25">0.25x</option>
                             <option value="0.5">0.5x</option>
                             <option value="1" selected>1x</option>
@@ -282,83 +147,152 @@
                             <option value="4">4x</option>
                             <option value="8">8x</option>
                         </select>
-                    </div>
-                    <div class="feature-toggles">
-                        <button id="toggleRotate" class="feature-toggle" title="Rotate Track 90°">🔄</button>
-                        <button id="toggleDrs" class="feature-toggle active" title="Toggle DRS Zones">DRS</button>
-                        <button id="toggleWeather" class="feature-toggle active" title="Toggle Weather">☁️</button>
-                    </div>
-                    <div class="progress-bar">
-                        <input type="range" id="progressSlider" min="0" max="0" value="0" step="1" class="slider">
-                        <div class="progress-info">
-                            <span id="currentFrame">0</span> / <span id="totalFrames">0</span>
-                        </div>
+                        <button id="toggleRotate" class="control-btn sm" title="Rotate Track 90°">🔄</button>
+                        <button id="toggleDrs" class="control-btn sm active" title="Toggle DRS Zones">DRS</button>
+                        <button id="toggleWeather" class="control-btn sm active" title="Toggle Weather">☁️</button>
                     </div>
                 </div>
-            </main>
+            </div>
 
-            <!-- RIGHT PANEL — Live Data -->
-            <aside class="panel panel-right">
-                <div class="panel-scroll">
-
-                    <!-- Leaderboard -->
-                    <div class="section" id="leaderboardSection" style="display: none;">
-                        <div class="section-header">
-                            <div class="leaderboard-header">
-                                <h2>Leaderboard</h2>
-                                <div class="gap-toggles">
-                                    <button id="gapLeaderBtn" class="gap-toggle" title="Gap to Leader">L</button>
-                                    <button id="gapIntervalBtn" class="gap-toggle active" title="Interval Gap">I</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="leaderboard" class="leaderboard"></div>
-                    </div>
-
-                    <!-- Tyre Strategy Panel -->
-                    <div class="section" id="tyreStrategySection" style="display: none;">
-                        <div class="section-header">
-                            <h2>🏁 Tyre Strategy</h2>
-                        </div>
-                        <div id="tyreStrategyPanel" class="tyre-strategy-panel"></div>
-                    </div>
-
-                    <!-- Race Control -->
-                    <div class="section" id="raceControlSection" style="display: none;">
-                        <div class="section-header">
-                            <h2>Race Control</h2>
-                        </div>
-                        <div id="raceControlFeed" class="race-control-feed"></div>
-                    </div>
-
-                    <!-- Strategy Insights (Langflow) -->
-                    <div class="section" id="strategyInsightsSection" style="display: none;">
-                        <div class="section-header">
-                            <h2>📊 Strategy Insights</h2>
-                        </div>
-                        <div id="strategyInsights" class="strategy-insights-box"></div>
-                    </div>
-
-                    <!-- Regulations Context (Docling) -->
-                    <div class="section" id="regulationsSection" style="display: none;">
-                        <div class="section-header">
-                            <h2>📚 Active Regulations</h2>
-                        </div>
-                        <div id="regulationsDisplay" class="regulations-box">
-                            <div class="regulation-item">
-                                <div class="regulation-title">No active regulation context</div>
-                                <div class="regulation-content">Regulations will appear here during relevant race events</div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 10px; margin-bottom: 15px; font-size: 11px; opacity: 0.5; text-align: center;">
-                            <span id="regulationsCount">0 sections loaded</span>
+            <div class="hud-right">
+                <div class="hud-panel glass-panel leaderboard-panel" id="leaderboardSection" style="display: none;">
+                    <div class="panel-header">
+                        <h2>LIVE STANDINGS</h2>
+                        <div class="gap-toggles">
+                            <button id="gapLeaderBtn" class="game-btn xs" title="Gap to Leader">L</button>
+                            <button id="gapIntervalBtn" class="game-btn xs active" title="Interval Gap">I</button>
                         </div>
                     </div>
-
+                    <div id="leaderboard" class="leaderboard"></div>
                 </div>
-            </aside>
+                
+                <div class="hud-panel glass-panel" id="tyreStrategySection" style="display: none;">
+                    <div class="panel-header"><h2>TYRE STRATEGY</h2></div>
+                    <div id="tyreStrategyPanel" class="tyre-strategy-panel"></div>
+                </div>
 
+                <div class="hud-panel glass-panel" id="raceControlSection" style="display: none;">
+                    <div class="panel-header"><h2>RACE CONTROL</h2></div>
+                    <div id="raceControlFeed" class="race-control-feed"></div>
+                </div>
+            </div>
+            
+        </main>
+        
+        <!-- Animated Overlays & Slide-out Panels -->
+        <!-- Strategy Insights -->
+        <div id="strategyInsightsSection" class="slide-panel right-panel" style="display: none;">
+            <div class="panel-header">
+                <h2>STRATEGY INSIGHTS</h2>
+                <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">×</button>
+            </div>
+            <div id="strategyInsights" class="strategy-insights-box panel-body"></div>
         </div>
+
+        <!-- Regulations Context -->
+        <div id="regulationsSection" class="slide-panel left-panel" style="display: none;">
+            <div class="panel-header">
+                <h2>ACTIVE REGULATIONS</h2>
+                <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">×</button>
+            </div>
+            <div id="regulationsDisplay" class="regulations-box panel-body">
+                <div class="regulation-item">
+                    <div class="regulation-title">No active regulation context</div>
+                    <div class="regulation-content">Regulations will appear here during relevant race events</div>
+                </div>
+            </div>
+            <div class="reg-footer">
+                <span id="regulationsCount">0 sections loaded</span>
+            </div>
+        </div>
+
+        <!-- Telemetry Comparison Overlay -->
+        <div id="telemetryComparison" class="telemetry-comparison glass-panel center-modal" style="display: none;">
+            <div class="telemetry-header">
+                <h2>DRIVER COMPARISON</h2>
+                <button class="close-btn" onclick="closeTelemetryComparison()">×</button>
+            </div>
+            <div class="telemetry-drivers" id="comparisonDrivers"></div>
+            <div class="telemetry-charts-container">
+                <div class="chart-section">
+                    <h4>SPEED (KM/H)</h4>
+                    <canvas id="speedChart" width="350" height="80"></canvas>
+                </div>
+                <div class="chart-section">
+                    <h4>THROTTLE (%)</h4>
+                    <canvas id="throttleChart" width="350" height="80"></canvas>
+                </div>
+                <div class="chart-section">
+                    <h4>BRAKE</h4>
+                    <canvas id="brakeChart" width="350" height="80"></canvas>
+                </div>
+                <div class="chart-section">
+                    <h4>GEAR</h4>
+                    <canvas id="gearChart" width="350" height="60"></canvas>
+                </div>
+            </div>
+            <div class="telemetry-stats" id="telemetryStats"></div>
+        </div>
+
+        <!-- Bottom Game Navigation (Floating Controls) -->
+        <nav class="game-bottom-nav">
+            <!-- Ghost Toggle inside Nav to feel like game menu -->
+            <div id="ghostSection" class="nav-item" style="display: none;">
+                <button class="game-nav-btn" onclick="toggleGhost(!ghostEnabled); document.getElementById('ghostPanel').style.display = ghostEnabled ? 'block' : 'none'">
+                    <span class="icon">👻</span>
+                    <span id="ghostToggleText">GHOST</span>
+                </button>
+                <div id="ghostPanel" class="ghost-tooltip glass-panel" style="display: none;">
+                    <div class="ghost-stats-row">
+                        <div class="ghost-stat-item">
+                            <div class="ghost-stat-label">Lap Delta</div>
+                            <div id="lapDelta" class="delta-value">+0.000</div>
+                        </div>
+                        <div class="ghost-stat-item">
+                            <div class="ghost-stat-label">Speed Δ</div>
+                            <div id="speedDelta">0 km/h</div>
+                        </div>
+                    </div>
+                    <div class="ghost-sectors">
+                        <div class="ghost-stat-label">Sector Deltas</div>
+                        <div class="ghost-sectors-grid">
+                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S1</div><div id="sector1Delta" class="delta-value">-</div></div>
+                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S2</div><div id="sector2Delta" class="delta-value">-</div></div>
+                            <div class="ghost-sector-cell"><div class="ghost-sector-label">S3</div><div id="sector3Delta" class="delta-value">-</div></div>
+                        </div>
+                    </div>
+                    <div class="ghost-reference">
+                        <div class="ghost-stat-label">Reference</div>
+                        <div id="ghostRef">Fastest Lap</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Debrief Button -->
+            <div id="debriefSection" class="nav-item" style="display: none;">
+                <button class="game-nav-btn accent" onclick="requestRaceDebrief()">
+                    <span class="icon">📊</span>
+                    <span>RACE DEBRIEF</span>
+                </button>
+            </div>
+            
+            <button class="game-nav-btn" onclick="document.querySelector('.hud-left').classList.toggle('hidden')">
+                <span class="icon">📋</span>
+                <span>HUB</span>
+            </button>
+            <button class="game-nav-btn" onclick="document.querySelector('.hud-right').classList.toggle('hidden')">
+                <span class="icon">🏆</span>
+                <span>STANDINGS</span>
+            </button>
+            <button class="game-nav-btn" onclick="document.getElementById('strategyInsightsSection').style.display='block'">
+                <span class="icon">🧠</span>
+                <span>STRATEGY</span>
+            </button>
+            <button class="game-nav-btn" onclick="document.getElementById('regulationsSection').style.display='block'">
+                <span class="icon">📚</span>
+                <span>RULES</span>
+            </button>
+        </nav>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
