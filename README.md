@@ -467,16 +467,4 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **F1 Fans** - For passion that drives innovation
 
 ---
-
-## 📞 Contact & Support
-
-### Project Team
-- **GitHub:** [github.com](https://github.com/dev-Ninjaa/chronos-f1)
-- **Issues:** [Report bugs or request features](https://github.com/dev-Ninjaa/chronos-f1/issues)
-
-### Hackathon
-- **Challenge:** IBM May Challenge - Car Racing and AI
-- **Discord:** [Join #may-challenge-and-lab channel](https://discord.com/invite/DzKvFAH6Hj)
-- **Submission:** [Challenge Platform](https://ibmskillsbuildchallenge-hub.bemyapp.com/#/sponsors/may-innovation-challenge-and-learning-lab)
-
----
+<img width="1983" height="793" alt="c58dbedc-b3fc-459e-9eb6-3871ae383b90" src="https://github.com/user-attachments/assets/66bffc85-1e8e-48a1-9c9e-bd74d9f98597" />
