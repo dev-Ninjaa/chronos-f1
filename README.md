@@ -1,4 +1,5 @@
 # 🏎️ Chronos F1 - AI-Powered Race Intelligence Platform
+<img width="1983" height="793" alt="98e5b3cb-5bb9-4a67-8a1b-74deb7dc31a0" src="https://github.com/user-attachments/assets/7be3582f-801f-4205-9a79-2e7430c132a2" />
 
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite_AI-blue?style=for-the-badge&logo=ibm)](https://github.com/ibm-granite-community)
 [![Docling](https://img.shields.io/badge/Docling-Document_AI-green?style=for-the-badge)](https://www.docling.ai)
