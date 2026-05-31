@@ -1,470 +1,507 @@
-# 🏎️ Chronos F1 - AI-Powered Race Intelligence Platform
-<img width="1983" height="793" alt="98e5b3cb-5bb9-4a67-8a1b-74deb7dc31a0" src="https://github.com/user-attachments/assets/7be3582f-801f-4205-9a79-2e7430c132a2" />
+# 🏎️ Chronos F1 — AI-Powered Race Intelligence Platform
+
+<img width="1983" height="793" alt="Chronos F1 interface preview" src="https://github.com/user-attachments/assets/7be3582f-801f-4205-9a79-2e7430c132a2" />
 
 [![IBM Granite](https://img.shields.io/badge/IBM-Granite_AI-blue?style=for-the-badge&logo=ibm)](https://github.com/ibm-granite-community)
 [![Docling](https://img.shields.io/badge/Docling-Document_AI-green?style=for-the-badge)](https://www.docling.ai)
 [![Langflow](https://img.shields.io/badge/Langflow-Workflow_AI-purple?style=for-the-badge)](https://www.langflow.org)
 [![Python](https://img.shields.io/badge/Python-3.11+-yellow?style=for-the-badge&logo=python)](https://www.python.org)
-[![Flask](https://img.shields.io/badge/Flask-WebSocket-red?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com)
+[![Flask](https://img.shields.io/badge/Flask-SocketIO-red?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com)
 
-> **Race to innovate. Drive AI beyond the finish line.**  
-> An intelligent F1 race replay and analysis platform powered by IBM Granite AI, delivering real-time commentary, strategic insights, and explainable AI-driven race analysis.
+Chronos F1 is an AI-powered race replay and intelligence platform for Formula 1. It combines telemetry, weather, tyre state, safety car phases, regulations, and race-control context into a live replay system with explainable AI commentary and strategy analysis.
 
----
+> [!IMPORTANT]
+> Chronos F1 is built for the part of racing that is hardest to understand live: when thousands of data signals change strategy faster than a viewer can process them.
 
-## 🎯 Challenge Solution
+## Challenge Solution
 
-**May Challenge Theme:** Car Racing and AI
+May Challenge Theme: Car Racing and AI
 
-Chronos F1 transforms the F1 viewing experience by applying AI to solve critical challenges in race analysis, strategy optimization, and fan engagement. Our solution demonstrates how AI can process massive amounts of telemetry data in real-time, generate insightful commentary, and provide explainable strategic recommendations that build trust through transparency.
+Chronos F1 transforms the F1 viewing experience by applying AI to race analysis, strategy optimization, and fan engagement. It demonstrates how AI can process high-volume telemetry in real time, generate insightful commentary, and provide explainable strategic recommendations that build trust through transparency.
 
-### 🏆 Why This Matters
+## Problem
 
-Formula 1 generates **1.5 million data points per second** during a race. Teams, drivers, and fans struggle to:
-- **Understand complex race strategies** in real-time
-- **Predict optimal pit stop windows** based on tyre degradation
-- **Analyze safety car impacts** on race outcomes
-- **Make sense of regulations** during critical moments
-- **Experience races** with intelligent, context-aware commentary
+Formula 1 is not just speed. Every lap is shaped by tyre degradation, pit timing, weather, traffic, DRS, safety cars, and regulations. Teams can read this complexity through engineering tools, but fans and analysts often see only the visible result: a pass, a pit stop, or a sudden strategy swing.
 
-**Chronos F1 solves these problems** by combining real-time telemetry processing with IBM's cutting-edge AI technologies to deliver actionable insights and enhance the racing experience for everyone.
+Formula 1 generates about 1.5 million data points per second during a race. Teams, drivers, and fans struggle to:
 
----
+- Understand complex race strategies in real time.
+- Predict optimal pit stop windows from tyre degradation.
+- Analyze safety car impact on race outcomes.
+- Make sense of regulations during critical moments.
+- Experience races with intelligent, context-aware commentary.
 
-## 🚀 Key Features
+Chronos F1 solves these problems by combining real-time telemetry processing with IBM AI technologies to deliver actionable insights and a clearer racing experience.
 
+| Problem | Why it is difficult | Chronos F1 response |
+| --- | --- | --- |
+| Race context is fragmented | Telemetry, weather, timing, and regulations live in separate streams | Combines race data into one synchronized replay |
+| Strategy is hard to explain live | Pit windows and tyre choices depend on fast-changing conditions | Models tyre health, safety car impact, and race events |
+| AI output needs trust | Commentary is only useful when it explains the reason behind an insight | Uses explainable, context-aware AI commentary |
 
-#### **Fan Mode & Engineer Mode** 🎙️
-- **Dual commentary styles** using the same telemetry data
-- **Fan Mode**: Simple, exciting broadcast commentary
-  - Example: *"Hamilton closes into DRS range."*
-- **Engineer Mode**: Technical, data-driven analysis
-  - Example: *"Hamilton reduced gap by 0.28 seconds through improved exit speed."*
-- **Real-time mode switching** - toggle between styles instantly
-- **Single data pipeline** - no duplicated analysis
+## AI and Technical Approach
 
-#### **AI Race Debrief** 📊
-- **Automatic generation** at replay completion
-- **Comprehensive analysis** including:
-  - Best strategy identification
-  - Critical race events timeline
-  - Most aggressive driver analysis
-  - Tyre efficiency comparison
-  - Safety car impact assessment
-  - Predicted vs actual outcomes
-  - AI strategic recommendations
-  - Professional race summary
-- **Export to PDF** for sharing and archival
-- **Full-screen modal** or side panel display
+Chronos F1 combines deterministic race simulation with AI-generated interpretation. The replay engine keeps race state accurate, while AI layers explain what is happening, why it matters, and how it may affect strategy.
 
-#### **Ghost Comparison System** 👻
-- **Compare against fastest lap** reference
-- **Live delta timing** with color-coded performance:
-  - 🟢 **Green**: Gaining time
-  - 🔴 **Red**: Losing time
-  - 🟡 **Gold**: Fastest sector (within 0.05s)
-- **Sector-by-sector analysis** (3 sectors)
-- **Smooth interpolation** at all replay speeds (0.25x - 8x)
-- **Ghost driver visualization** on track
-- **Real-time speed differential**
+```mermaid
+flowchart TD
+    A[FastF1 race data] --> B[Data Manager]
+    B --> C[Telemetry frames at 25 FPS]
+    B --> D[Weather and race-control events]
+    C --> E[Replay Engine]
+    D --> E
 
-#### **IBM Granite AI Commentary**
-- **Real-time race commentary** generated using IBM Granite models
-- **Context-aware analysis** that understands race situations
-- **Event detection** (overtakes, pit stops, DRS activation, crashes)
-- **Strategic insights** based on telemetry patterns
-- **Explainable AI** - commentary explains *why* decisions matter
+    E --> F[Race state: position, gap, speed, lap, sector]
+    F --> G[Tyre Model]
+    F --> H[Safety Car Model]
+    F --> I[Ghost Comparison]
 
-#### **Docling Document Intelligence**
-- **FIA regulations processing** - understands F1 rules and regulations
-- **Race report analysis** - extracts insights from historical documents
-- **Context injection** - provides regulatory context during critical moments
-- **Structured knowledge** - converts PDFs into actionable intelligence
+    G --> J[Strategy context]
+    H --> J
+    I --> J
+    D --> J
 
-#### **Langflow Workflow Orchestration**
-- **Multi-stage analysis pipelines** for comprehensive race insights
-- **Strategy optimization workflows** combining multiple AI models
-- **Automated insight generation** every 90 seconds
-- **Modular AI architecture** for extensibility
+    K[FIA regulation documents] --> L[Docling document processing]
+    L --> J
 
-### 📊 Advanced Race Analytics
+    J --> M[Langflow orchestration]
+    M --> N[IBM Granite commentary and debrief]
 
-#### **Real-Time Telemetry Processing**
-- **25 FPS live replay** with sub-second accuracy
-- **Position tracking** with gap calculations (leader/interval)
-- **Speed, throttle, brake analysis** for all drivers
-- **DRS zone detection** and activation tracking
-- **Lap-by-lap progression** with distance metrics
+    F --> O[Flask SocketIO server]
+    N --> O
+    O --> P[Browser UI: track replay, leaderboard, commentary, analytics]
+```
 
-#### **Predictive Tyre Model**
-- **Bayesian degradation prediction** for all tyre compounds
-- **Remaining lap estimation** based on wear patterns
-- **Compound-specific curves** (Soft/Medium/Hard/Intermediate/Wet)
-- **Health scoring** (0-100%) with visual indicators
-- **Strategic pit window recommendations**
+<details>
+<summary>Technical components</summary>
 
-#### **Safety Car Simulation**
-- **3-phase SC model** (Deploying → On Track → Returning)
-- **Position calculation** relative to race leader
-- **Track status integration** (Green/Yellow/Red/SC/VSC)
-- **Visual effects** with pulsing glow rendering
+| Layer | Files | Responsibility |
+| --- | --- | --- |
+| Race data | `manager/dataManager.py` | Loads FastF1 sessions, telemetry, weather, timing, and messages |
+| Replay | `replay/replayEngine.py`, `replay/ghostEngine.py` | Streams synchronized race frames and comparison state |
+| Models | `models/tyreModel.py`, `models/safetyCarModel.py` | Predicts tyre health and simulates safety car behavior |
+| AI | `ai/graniteClient.py`, `ai/aiCommentary.py`, `ai/raceDebrief.py` | Generates commentary, insight, and post-race analysis |
+| Documents | `documents/documentProcessor.py` | Processes regulation text for contextual AI responses |
+| Workflows | `workflows/langflowIntegration.py` | Coordinates multi-stage strategy and analysis flows |
+| Web app | `app.py`, `templates/index.html`, `static/` | Serves the live UI through Flask and SocketIO |
 
-#### **Weather Intelligence**
-- **Real-time weather data** (track temp, air temp, humidity)
-- **Wind speed & direction** with compass visualization
-- **Rain state detection** (Dry/Wet)
-- **Weather impact analysis** on tyre strategy
+</details>
 
-### 🎮 Interactive Visualization
+<details>
+<summary>AI innovation details</summary>
 
-- **Dynamic track rendering** with bounds and finish line
-- **Multi-driver selection** (right-click to compare multiple drivers)
-- **Variable playback speed** (0.25x - 8x)
-- **Race control feed** with FIA messages and flags
-- **Responsive dark theme** optimized for data visibility
-- **Feature toggles** (DRS zones, weather, charts)
+### Explainable AI Commentary
 
----
+Traditional race commentary can miss the strategic reason behind a moment. Chronos F1 analyzes telemetry and event context, then uses IBM Granite to explain race situations in plain language.
 
-## 🛠️ Technology Stack
+- Analyzes 60+ telemetry parameters per frame.
+- Detects race events such as overtakes, pit stops, DRS activation, and high-speed moments.
+- Generates context-aware commentary every 90 seconds.
+- Explains strategic implications instead of only describing visible action.
+- Adds regulatory context from FIA documents where relevant.
 
-### Core IBM AI Technologies
+Example:
+
+```text
+Verstappen pits from the lead on lap 18, earlier than expected.
+With track temperatures rising, his soft tyres were degrading faster
+than predicted. This undercut attempt could gain time if Hamilton
+stays out another lap.
+```
+
+### Predictive Tyre Strategy
+
+Tyre degradation is one of the most important strategy variables in racing. Chronos F1 models compound wear so pit windows and tyre risk are easier to understand.
+
+- Predicts remaining laps for each compound.
+- Calculates health scores from 0 to 100%.
+- Recommends strategic pit windows.
+- Adapts interpretation to weather and stint context.
+- Provides confidence-aware explanations.
+
+```python
+health = 100 * exp(-degradation_rate * tyre_age)
+
+rates = {
+    "SOFT": 0.08,
+    "MEDIUM": 0.05,
+    "HARD": 0.03,
+    "INTERMEDIATE": 0.06,
+    "WET": 0.04,
+}
+```
+
+### Multi-Modal AI Integration
+
+Chronos F1 combines three AI-oriented systems:
+
+| System | Role |
+| --- | --- |
+| IBM Granite | Natural language commentary and debrief generation |
+| Docling | Regulation and document understanding |
+| Langflow | Workflow orchestration for multi-step race analysis |
+
+</details>
+
+## Why It Matters in Racing
+
+Racing decisions are time-sensitive. A tyre drop-off, safety car, or undercut opportunity can change a Grand Prix within seconds. Chronos F1 makes those moments easier to see, explain, and review.
+
+For fans, it adds context that usually lives inside team radio and strategy rooms. For analysts, it creates a replayable view of decisions and consequences. For builders, it demonstrates how AI can sit on top of live sports data without replacing the underlying race logic.
+
+## Features
+
+| Feature | What it does |
+| --- | --- |
+| Fan and engineer modes | Switches between broadcast-style narration and technical analysis |
+| AI race debrief | Summarizes strategy, key events, tyre performance, and safety car impact |
+| Ghost comparison | Compares a selected driver against a reference lap with live delta timing |
+| IBM Granite commentary | Generates race-aware commentary from telemetry and event context |
+| Docling document intelligence | Adds regulation and document context to AI responses |
+| Langflow orchestration | Coordinates multi-stage analysis pipelines |
+| Advanced analytics | Tracks telemetry, tyre health, safety car phases, and weather |
+| Interactive visualization | Provides replay controls, driver selection, overlays, and race-control feed |
+
+<details>
+<summary>Core feature details</summary>
+
+### Fan Mode and Engineer Mode
+
+- Uses one telemetry pipeline for both commentary styles.
+- Fan Mode produces simple broadcast-style narration.
+- Engineer Mode produces technical, data-driven analysis.
+- Commentary mode can be switched in real time.
+
+Examples:
+
+```text
+Fan Mode: Hamilton closes into DRS range.
+Engineer Mode: Hamilton reduced the gap by 0.28 seconds through improved exit speed.
+```
+
+### AI Race Debrief
+
+- Generates automatically at replay completion.
+- Identifies best strategy choices.
+- Builds a critical race event timeline.
+- Highlights the most aggressive driver.
+- Compares tyre efficiency.
+- Assesses safety car impact.
+- Compares predicted and actual outcomes.
+- Produces AI strategic recommendations and a professional race summary.
+- Supports full-screen modal or side-panel display.
+
+### Ghost Comparison System
+
+- Compares against a fastest-lap reference.
+- Shows live delta timing.
+- Tracks three sectors.
+- Smooths comparison with interpolation from 0.25x to 8x playback.
+- Visualizes the ghost driver on track.
+- Shows real-time speed differential.
+
+Delta timing states:
+
+| State | Meaning |
+| --- | --- |
+| Green | Gaining time |
+| Red | Losing time |
+| Gold | Fastest sector or within 0.05 seconds |
+
+### AI and Workflow Features
+
+- IBM Granite generates real-time race commentary.
+- Event detection covers overtakes, pit stops, DRS activation, crashes, and high-speed moments.
+- Docling processes FIA regulations and race documents.
+- Regulatory context can be injected during critical moments.
+- Langflow coordinates modular analysis workflows.
+- Automated insight generation runs every 90 seconds.
+
+</details>
+
+<details>
+<summary>Advanced analytics and visualization</summary>
+
+### Real-Time Telemetry Processing
+
+- 25 FPS live replay with sub-second accuracy.
+- Position tracking with leader and interval gap calculations.
+- Speed, throttle, and brake analysis for all drivers.
+- DRS zone detection and activation tracking.
+- Lap-by-lap progression with distance metrics.
+
+### Predictive Tyre Model
+
+- Bayesian degradation prediction for all tyre compounds.
+- Remaining lap estimation based on wear patterns.
+- Compound-specific curves for Soft, Medium, Hard, Intermediate, and Wet tyres.
+- Health scoring from 0 to 100% with visual indicators.
+- Strategic pit window recommendations.
+
+### Safety Car Simulation
+
+- Three-phase safety car model: Deploying, On Track, Returning.
+- Position calculation relative to the race leader.
+- Track status integration for Green, Yellow, Red, SC, and VSC states.
+- Visual effects with pulsing glow rendering.
+
+### Weather Intelligence
+
+- Real-time weather data for track temperature, air temperature, humidity, wind, and rain state.
+- Wind speed and direction with compass visualization.
+- Dry and wet state detection.
+- Weather impact analysis for tyre strategy.
+
+### Interactive Visualization
+
+- Dynamic track rendering with bounds and finish line.
+- Multi-driver selection through right-click comparison.
+- Variable playback speed from 0.25x to 8x.
+- Race control feed with FIA messages and flags.
+- Responsive dark theme optimized for data visibility.
+- Feature toggles for DRS zones, weather, and charts.
+
+</details>
+
+## Technology Stack
 
 | Technology | Purpose | Status | Implementation |
-|------------|---------|--------|----------------|
-| **IBM Granite** | AI commentary generation | ✅ **Working** | `ai/graniteClient.py`, `ai/aiCommentary.py` |
-| **Docling** | Document processing & regulations | ✅ **Working** | `documents/documentProcessor.py` + built-in markdown parser |
-| **Langflow** | Workflow orchestration | ✅ **Working** | `workflows/langflowIntegration.py` with built-in implementations |
+| --- | --- | --- | --- |
+| IBM Granite | AI commentary generation | Working | `ai/graniteClient.py`, `ai/aiCommentary.py` |
+| Docling | Document processing and regulations | Working | `documents/documentProcessor.py` |
+| Langflow | Workflow orchestration | Working | `workflows/langflowIntegration.py` |
+| FastF1 | Formula 1 telemetry data | Working | `manager/dataManager.py` |
+| Flask + SocketIO | Real-time web server and event streaming | Working | `app.py` |
+| NumPy, Pandas, SciPy | Data processing and spatial calculations | Working | `requirements.txt` |
+| Canvas API | Track and replay visualization | Working | `static/js/app.js` |
 
-**Note on AI Models:**  
-We are using **IBM Granite** via **local Ollama** for AI commentary generation. For detailed instructions on installing Ollama, setting up IBM Granite, and configuring models, please refer to the [Ollama & Granite Setup Guide](OLLAMA_GRANITE.md).
+> [!NOTE]
+> IBM Granite runs locally through Ollama. See [OLLAMA_GRANITE.md](OLLAMA_GRANITE.md) for model setup.
 
-### Supporting Technologies
+<details>
+<summary>Supporting technology notes</summary>
 
-- **FastF1** - Official F1 telemetry data API
-- **Flask + SocketIO** - Real-time WebSocket communication
-- **NumPy/Pandas** - High-performance data processing
-- **SciPy** - Scientific computing (KD-Tree for spatial queries)
-- **Canvas API** - Hardware-accelerated rendering
+- FastF1 provides official timing, telemetry, weather, and session data.
+- Flask and SocketIO stream replay state to the browser in real time.
+- NumPy and Pandas handle high-volume telemetry processing.
+- SciPy supports spatial calculations such as KD-Tree based track queries.
+- Canvas API renders the replay interface efficiently in the browser.
 
----
+</details>
 
-## 📦 Installation & Setup
+## Installation
 
-We provide automated setup scripts in the `scripts/` directory for a quick and easy start. **Important: Each script must be run in a separate terminal window.**
+Use the scripts in `scripts/` for the fastest start. Each long-running service should be opened in its own terminal.
 
-- `scripts/env.bat` or `.sh`: Initializes the `.env` configuration file.
-- `scripts/Granite.bat` or `.sh`: Starts the local Ollama instance with the IBM Granite model.
-- `scripts/langflow.bat` or `.sh`: Starts the Langflow server for workflow orchestration.
-- `scripts/start.bat` or `.sh`: Sets up the virtual environment, installs dependencies, and launches the Chronos F1 web app.
+```bash
+scripts/env.sh
+scripts/Granite.sh
+scripts/langflow.sh
+scripts/start.sh
+```
 
-For detailed project setup instructions, commands, manual environment configuration, and running the application without scripts, please refer to the [Setup Guide](SETUP.md). Also, see the [Ollama & Granite Setup Guide](OLLAMA_GRANITE.md) for more info on local AI models.
+On Windows, use the matching `.bat` files.
 
----
+<details>
+<summary>What each script does</summary>
 
-## 🎮 Usage Guide
+| Script | Purpose |
+| --- | --- |
+| `scripts/env.sh` or `scripts/env.bat` | Initializes the `.env` configuration file |
+| `scripts/Granite.sh` or `scripts/Granite.bat` | Starts the local Ollama instance with the IBM Granite model |
+| `scripts/langflow.sh` or `scripts/langflow.bat` | Starts the Langflow server for workflow orchestration |
+| `scripts/start.sh` or `scripts/start.bat` | Creates the environment, installs dependencies, and launches the web app |
 
-### Loading a Race
+</details>
 
-1. **Select Season** - Choose from 2018-2026
-2. **Select Race** - Pick any Grand Prix
-3. **Click "Load Race"** - First load downloads data (~30-60s)
-4. **Wait for cache** - Subsequent loads are instant
-5. **Click Play** - Watch the race replay with AI commentary
+<details>
+<summary>Manual setup</summary>
 
-### Recommended Test Races
+### Prerequisites
 
-| Race | Year | Round | Why Test This |
-|------|------|-------|---------------|
-| **Bahrain GP** | 2024 | R1 | Good baseline, all features work |
-| **Australian GP** | 2024 | R3 | Has safety car periods |
-| **Australian GP** | 2026 | R1 | Latest data available |
+- Python 3.11 or newer.
+- Git.
+- A modern browser.
+- Ollama for local IBM Granite inference.
+- `uv` or `pip` for dependency installation.
+
+### Commands
+
+```bash
+git clone https://github.com/dev-Ninjaa/chronos-f1.git
+cd chronos-f1
+
+python -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env
+python app.py
+```
+
+Open `http://localhost:5000` after the Flask server starts.
+
+For complete setup instructions, see [SETUP.md](SETUP.md). For local AI model setup, see [OLLAMA_GRANITE.md](OLLAMA_GRANITE.md).
+
+</details>
+
+## Usage
+
+1. Select a season from 2018 to 2026.
+2. Select a Grand Prix.
+3. Load the race session.
+4. Wait for the first cache build if needed.
+5. Start playback and switch drivers, gap modes, overlays, and commentary mode.
+6. Review the AI debrief after replay completion.
+
+<details>
+<summary>Controls and recommended races</summary>
 
 ### Controls
 
 | Action | Control | Description |
-|--------|---------|-------------|
-| **Play/Pause** | ▶/⏸ button | Start/stop replay |
-| **Restart** | ⏮ button | Jump to race start |
-| **Speed** | Dropdown | 0.25x to 8x playback |
-| **Seek** | Progress bar | Jump to any moment |
-| **Select Driver** | Click leaderboard | Highlight driver |
-| **Multi-Select** | Right-Click | Compare multiple drivers |
-| **Gap Mode** | L/I buttons | Leader or Interval gaps |
-| **Toggle DRS** | DRS button | Show/hide DRS zones |
-| **Toggle Weather** | ☁️ button | Show/hide weather panel |
+| --- | --- | --- |
+| Play or pause | Playback button | Start or stop replay |
+| Restart | Rewind button | Jump to race start |
+| Speed | Speed dropdown | Switch between 0.25x and 8x playback |
+| Seek | Progress bar | Jump to a race moment |
+| Select driver | Click leaderboard row | Highlight one driver |
+| Multi-select | Right-click leaderboard row | Compare multiple drivers |
+| Gap mode | Leader or interval control | Switch between leader and interval gaps |
+| Toggle DRS | DRS control | Show or hide DRS zones |
+| Toggle weather | Weather control | Show or hide the weather panel |
 
-### AI Commentary Features
+### Recommended Test Races
 
-- **Automatic generation** every 90 seconds
-- **Event-triggered** commentary for overtakes, pit stops, crashes
-- **Context-aware** - understands race situation and regulations
-- **Strategic insights** - explains tyre strategy and pit windows
-- **Explainable** - commentary explains *why* things matter
+| Race | Year | Round | Why test it |
+| --- | --- | --- | --- |
+| Bahrain Grand Prix | 2024 | 1 | Stable baseline for core features |
+| Australian Grand Prix | 2024 | 3 | Useful for safety car behavior |
+| Australian Grand Prix | 2026 | 1 | Recent race data path |
 
----
+</details>
 
-## 🏗️ Project Architecture
-
-For detailed information regarding the project's folder structure, data flow, and architectural design, please refer to the [Architecture Guide](architecture.md).
-```
-
----
-
-## 🎓 How It Works
-
-### 1. Data Acquisition & Processing
-
-```python
-# dataManager.py - FastF1 Integration
-session = fastf1.get_session(2024, 1, 'R')  # Bahrain GP 2024
-session.load(telemetry=True, weather=True, messages=True)
-
-# Process into 25 FPS frames
-frames = process_telemetry_to_frames(session)
-# Result: ~45,000 frames for a 2-hour race
-```
-
-### 2. AI Commentary Generation
-
-```python
-# ai/aiCommentary.py - IBM Granite Integration
-commentary_manager = CommentaryManager()
-
-# Generate context-aware commentary
-commentary = commentary_manager.generateForFrame(
-    current_frame=telemetry_data,
-    previous_frame=last_frame
-)
-
-# Output: "Hamilton activates DRS! He's closing the gap to 
-# Verstappen - now just 0.8 seconds behind. This could be 
-# the overtake we've been waiting for!"
-```
-
-### 3. Document Intelligence
-
-```python
-# documents/documentProcessor.py - Docling Integration
-processor = DocumentProcessor()
-
-# Process FIA regulations
-regulations = processor.processDocument('fia_regulations.pdf')
-
-# Extract structured knowledge
-drs_rules = regulations['sections']['DRS Rules']
-# "DRS can only be used when within 1 second of car ahead 
-# in designated zones"
-```
-
-### 4. Workflow Orchestration
-
-```python
-# workflows/langflowIntegration.py - Langflow Integration
-orchestrator = F1WorkflowOrchestrator()
-
-# Execute multi-stage analysis
-analysis = orchestrator.executeWorkflow('strategy_analysis', {
-    'frame': current_telemetry,
-    'tyre_data': tyre_model.get_health(),
-    'weather': weather_data
-})
-
-# Output: Strategic recommendations with confidence scores
-```
-
----
-
-## 🧠 AI Innovation Highlights
-
-### 1. Explainable AI Commentary
-
-**Problem:** Traditional race commentary lacks context and strategic depth.
-
-**Solution:** Our AI commentary system:
-- Analyzes **60+ telemetry parameters** per frame
-- Detects **4 event types** (overtakes, pit stops, DRS, high-speed)
-- Generates **context-aware commentary** every 90 seconds
-- Explains **strategic implications** of race events
-- Provides **regulatory context** from FIA documents
-
-**Example Output:**
-```
-"Verstappen pits from the lead on lap 18 - earlier than expected! 
-With track temperatures at 45°C, his soft tyres were degrading 
-faster than predicted. This undercut attempt could gain him 3-4 
-seconds if Hamilton stays out another lap. According to FIA 
-regulations, pit lane speed limit is 80 km/h, so execution will 
-be critical."
-```
-
-### 2. Predictive Tyre Strategy
-
-**Problem:** Tyre degradation is complex and affects race outcomes.
-
-**Solution:** Bayesian tyre model that:
-- Predicts **remaining laps** for each compound
-- Calculates **health scores** (0-100%)
-- Recommends **optimal pit windows**
-- Adapts to **weather conditions**
-- Explains **confidence levels**
-
-**Technical Approach:**
-```python
-# Bayesian degradation model
-health = 100 * exp(-degradation_rate * tyre_age)
-
-# Compound-specific rates
-rates = {
-    'SOFT': 0.08,      # Degrades fastest
-    'MEDIUM': 0.05,    # Balanced
-    'HARD': 0.03,      # Most durable
-    'INTERMEDIATE': 0.06,
-    'WET': 0.04
-}
-```
-
-### 3. Multi-Modal AI Integration
-
-**Unique Approach:** Combines three IBM AI technologies:
-
-1. **Granite AI** - Natural language generation
-2. **Docling** - Document understanding
-3. **Langflow** - Workflow orchestration
-
-**Result:** Comprehensive AI system that:
-- Understands **race context** (Granite)
-- Knows **regulations** (Docling)
-- Orchestrates **complex analysis** (Langflow)
-
----
-
-## 📊 Technical Achievements
-
-### Performance Metrics
+## Technical Achievements
 
 | Metric | Value | Details |
-|--------|-------|---------|
-| **Frame Rate** | 25 FPS | Real-time telemetry streaming |
-| **Data Points** | 60+ per frame | Comprehensive telemetry |
-| **Latency** | <40ms | WebSocket communication |
-| **Cache Speed** | <2s | Instant subsequent loads |
-| **AI Response** | <3s | Commentary generation |
-| **Accuracy** | 99.9% | Position tracking |
+| --- | --- | --- |
+| Frame rate | 25 FPS | Real-time telemetry streaming |
+| Data points | 60+ per frame | Comprehensive telemetry context |
+| Latency | Under 40 ms | WebSocket communication target |
+| Cache speed | Under 2 seconds | Instant subsequent loads after processing |
+| AI response | Under 3 seconds | Commentary generation target |
+| Position tracking | 99.9% | High-accuracy replay positioning |
+
+<details>
+<summary>Scalability and innovation points</summary>
 
 ### Scalability
 
-- **Handles 20+ drivers** simultaneously
-- **Processes 2+ hours** of race data
-- **Generates 45,000+ frames** per race
-- **Supports 2018-2026** seasons (8+ years)
-- **Caches intelligently** for instant replay
+- Handles 20+ drivers simultaneously.
+- Processes 2+ hours of race data.
+- Generates 45,000+ frames per race.
+- Supports race sessions from 2018 to 2026.
+- Caches processed data for faster replay loads.
 
 ### Innovation Points
 
-✅ **Real-time AI commentary** - First F1 replay with live AI analysis  
-✅ **Explainable predictions** - Tyre model explains confidence  
-✅ **Regulatory awareness** - AI understands FIA rules  
-✅ **Multi-modal integration** - Combines 3 IBM AI technologies  
-✅ **Open source** - Fully transparent and extensible  
+- Real-time AI commentary for live replay analysis.
+- Explainable predictions from the tyre model.
+- Regulatory awareness through FIA document processing.
+- Multi-system AI integration with Granite, Docling, and Langflow.
+- Open-source implementation designed for extension.
 
----
+</details>
 
-## 🎯 Hackathon Alignment
+## Project Structure
 
-### Challenge Requirements ✅
+```text
+chronos-f1/
+├── ai/                 # Granite clients, commentary, intelligence, debriefs
+├── documents/          # Regulation and document processing
+├── manager/            # FastF1 data loading and transformation
+├── models/             # Tyre and safety car models
+├── replay/             # Replay and ghost comparison engines
+├── static/             # Browser-side CSS and JavaScript
+├── templates/          # Flask templates
+├── workflows/          # Langflow orchestration
+├── test/               # Core and AI feature tests
+├── SETUP.md            # Detailed setup guide
+├── OLLAMA_GRANITE.md   # Local Granite model guide
+└── ARCHITECTURE.md     # Extended architecture notes
+```
 
-| Requirement | Implementation | Evidence |
-|-------------|----------------|----------|
-| **IBM AI Technology** | ✅ Granite, Docling, Langflow | `ai/`, `documents/`, `workflows/` |
-| **Public GitHub Repo** | ✅ Open source | This repository |
-| **Functioning Prototype** | ✅ Full web application | `app.py`, `templates/`, `static/` |
-| **Clear README** | ✅ Comprehensive docs | This file + `docs/` |
-| **Problem Statement** | ✅ Race analysis & fan experience | See "Why This Matters" |
-| **Technical Approach** | ✅ AI-powered telemetry analysis | See "How It Works" |
-| **Real-world Relevance** | ✅ Applicable to teams & fans | See "Key Features" |
+## Validation
 
----
+Run the test suite before opening a pull request:
 
-## 🎥 Demo & Presentation
+```bash
+pytest
+```
 
-### 3-Minute Demo Script
+## Roadmap
 
-**[0:00-0:30] Problem Introduction**
-> "Formula 1 generates 1.5 million data points per second. Teams struggle to analyze this data in real-time, and fans miss critical strategic insights. Chronos F1 solves this with AI."
+Chronos F1 is structured for deeper analytics, broader race coverage, and richer AI-assisted review.
 
-**[0:30-1:30] Live Demo**
-> *Load 2024 Bahrain GP*  
-> "Watch as our AI analyzes the race in real-time. See the AI commentary explaining overtakes, pit strategy, and tyre degradation. Notice how it references FIA regulations during critical moments."
+<details>
+<summary>Planned enhancements</summary>
 
-**[1:30-2:30] Technical Innovation**
-> "We combine three IBM AI technologies: Granite for commentary, Docling for regulations, and Langflow for orchestration. Our Bayesian tyre model predicts degradation with explainable confidence scores."
+### Short Term
 
-**[2:30-3:00] Impact & Future**
-> "This platform helps teams optimize strategy, drivers understand competitors, and fans experience races with intelligent insights. It's production-ready and scalable to all motorsports."
+- Live race integration with F1 live timing APIs.
+- Driver comparison charts for side-by-side telemetry.
+- Detailed sector time breakdowns.
+- Machine-learning assisted pit stop predictions.
 
-### Screenshots
+### Medium Term
 
-*(Add these to your repository)*
+- Multi-language commentary.
+- Historical race comparison across seasons.
+- Team radio synchronization.
+- Native mobile app experience.
 
-1. **Main Interface** - Track view with leaderboard
-2. **AI Commentary** - Real-time commentary panel
-3. **Tyre Strategy** - Degradation predictions
-4. **Safety Car** - SC simulation in action
-5. **Weather Panel** - Real-time weather data
+### Long Term
 
----
+- Predictive race outcome modeling.
+- Fantasy F1 strategy support.
+- VR and AR race viewing.
+- Multi-series support for IndyCar, NASCAR, and Formula E.
 
-## 🔮 Future Enhancements
+</details>
 
-### Short-term (Next Sprint)
-- [ ] **Live race integration** - Connect to F1 live timing API
-- [ ] **Driver comparison charts** - Side-by-side telemetry graphs
-- [ ] **Sector analysis** - Detailed sector time breakdowns
-- [ ] **Pit stop predictions** - ML-based pit window recommendations
+## Contributing
 
-### Medium-term (Next Quarter)
-- [ ] **Multi-language commentary** - Support 10+ languages
-- [ ] **Historical race comparison** - Compare current race to past years
-- [ ] **Team radio integration** - Sync with team communications
-- [ ] **Mobile app** - iOS/Android native apps
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, workflow, and project guidelines.
 
-### Long-term (Next Year)
-- [ ] **Predictive race outcomes** - ML models for race winner prediction
-- [ ] **Fantasy F1 integration** - Help users make fantasy picks
-- [ ] **VR/AR experience** - Immersive 3D race viewing
-- [ ] **Multi-series support** - Expand to IndyCar, NASCAR, Formula E
+## License
 
----
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-## 🤝 Contributing
+## Acknowledgments
 
-We welcome contributions! For detailed instructions on cloning the repository, development setup, and contribution guidelines, please refer to our [Contributing Guide](contributing.md).
+Chronos F1 is built with support from the IBM Granite ecosystem, Docling, Langflow, FastF1, and the open-source motorsport analytics community.
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
+<details>
+<summary>Detailed credits</summary>
 
 ### IBM AI Technologies
-- **IBM Granite Community** - For powerful open-source AI models
-- **Docling Team** - For document intelligence capabilities
-- **Langflow Team** - For workflow orchestration framework
 
-### Data & APIs
-- **FastF1** - For comprehensive F1 telemetry data
-- **Formula 1** - For making data accessible to fans
-- **FIA** - For regulatory documentation
+- IBM Granite Community for powerful open-source AI models.
+- Docling Team for document intelligence capabilities.
+- Langflow Team for workflow orchestration.
+
+### Data and APIs
+
+- FastF1 for comprehensive F1 telemetry data.
+- Formula 1 for making race data accessible to fans.
+- FIA for regulatory documentation.
 
 ### Inspiration
-- **F1 Teams** - For pushing the boundaries of data analysis
-- **Race Engineers** - For strategic insights
-- **F1 Fans** - For passion that drives innovation
 
----
-<img width="1983" height="361" alt="ChatGPT Image Jun 1, 2026, 01_51_06 AM (1)" src="https://github.com/user-attachments/assets/753b8f34-db40-489e-bb2e-3599ce2272b1" />
+- F1 teams for pushing the boundaries of race data analysis.
+- Race engineers for showing how strategy can shape every lap.
+- F1 fans for the curiosity that makes deeper race intelligence worth building.
+
+</details>
+
+<img width="1983" height="361" alt="Chronos F1 footer banner" src="https://github.com/user-attachments/assets/753b8f34-db40-489e-bb2e-3599ce2272b1" />
