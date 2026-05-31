@@ -13,15 +13,15 @@ Chronos F1 is an AI-powered race replay and intelligence platform for Formula 1.
 > [!IMPORTANT]
 > Chronos F1 is built for the part of racing that is hardest to understand live: when thousands of data signals change strategy faster than a viewer can process them.
 
-## Challenge Solution
-
-May Challenge Theme: Car Racing and AI
-
-Chronos F1 transforms the F1 viewing experience by applying AI to race analysis, strategy optimization, and fan engagement. It demonstrates how AI can process high-volume telemetry in real time, generate insightful commentary, and provide explainable strategic recommendations that build trust through transparency.
-
 ## Problem
 
 Formula 1 is not just speed. Every lap is shaped by tyre degradation, pit timing, weather, traffic, DRS, safety cars, and regulations. Teams can read this complexity through engineering tools, but fans and analysts often see only the visible result: a pass, a pit stop, or a sudden strategy swing.
+
+> [!NOTE]
+> The core problem is not a lack of racing data. It is that the most important signals are scattered, fast-moving, and hard to explain while the race is still unfolding.
+
+<details>
+<summary>Why race intelligence is difficult</summary>
 
 Formula 1 generates about 1.5 million data points per second during a race. Teams, drivers, and fans struggle to:
 
@@ -31,13 +31,22 @@ Formula 1 generates about 1.5 million data points per second during a race. Team
 - Make sense of regulations during critical moments.
 - Experience races with intelligent, context-aware commentary.
 
-Chronos F1 solves these problems by combining real-time telemetry processing with IBM AI technologies to deliver actionable insights and a clearer racing experience.
+These moments are especially difficult because race context changes across several systems at once. A safety car can alter pit strategy, tyre temperature can change stint viability, and a regulation detail can reshape how a race-control message should be understood.
+
+</details>
 
 | Problem | Why it is difficult | Chronos F1 response |
 | --- | --- | --- |
 | Race context is fragmented | Telemetry, weather, timing, and regulations live in separate streams | Combines race data into one synchronized replay |
 | Strategy is hard to explain live | Pit windows and tyre choices depend on fast-changing conditions | Models tyre health, safety car impact, and race events |
 | AI output needs trust | Commentary is only useful when it explains the reason behind an insight | Uses explainable, context-aware AI commentary |
+
+## Our Solution
+
+Chronos F1 transforms the F1 viewing experience by applying AI to race analysis, strategy optimization, and fan engagement. It processes high-volume telemetry in real time, generates insightful commentary, and produces explainable strategic recommendations that show why a racing moment matters.
+
+> [!TIP]
+> Chronos F1 keeps the race logic deterministic and uses AI for interpretation. That makes the platform easier to trust: the replay state comes from structured telemetry, while IBM Granite explains the strategy and context around it.
 
 ## AI and Technical Approach
 
